@@ -456,7 +456,7 @@ public class FlutterImclientPlugin implements FlutterPlugin, MethodCallHandler, 
       int limit = call.argument("limit");
       int offset = call.argument("offset");
 
-      result.success(convertProtoMessages(ProtoLogic.searchMessageEx(type, target, line, keyword, order, limit, offset)));
+      result.success(convertProtoMessages(ProtoLogic.searchMessageEx(type, target, line, keyword, order, limit, offset, null)));
     } else if("searchConversationsMessages".equals(call.method)) {
       List<Integer> types = call.argument("types");
       List<Integer> lines = call.argument("lines");
@@ -469,7 +469,7 @@ public class FlutterImclientPlugin implements FlutterPlugin, MethodCallHandler, 
         desc = true;
         count = -count;
       }
-      result.success(convertProtoMessages(ProtoLogic.searchMessageEx2(convertIntegerList(types), convertIntegerList(lines), convertIntegerList(contentTypes), keyword, fromIndex, desc, count)));
+      result.success(convertProtoMessages(ProtoLogic.searchMessageEx2(convertIntegerList(types), convertIntegerList(lines), convertIntegerList(contentTypes), keyword, fromIndex, desc, count, null)));
     } else if("sendMessage".equals(call.method)) {
       int requestId = call.argument("requestId");
       Map conversation = call.argument("conversation");

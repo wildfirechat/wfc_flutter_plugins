@@ -60,7 +60,9 @@ class CompositeMessageContent extends MediaMessageContent {
       payload.mentionedType = map['cmt'];
       payload.mentionedTargets = map['cmts'];
       payload.extra = map['ce'];
-      payload.mediaType = MediaType.values[map['mt']];
+      if(map['mt'] != null) {
+        payload.mediaType = MediaType.values[map['mt']];
+      }
       payload.remoteMediaUrl = map['mru'];
 
       msg.content = FlutterImclient.decodeMessageContent(payload);
