@@ -1369,7 +1369,7 @@ public class FlutterImclientPlugin implements FlutterPlugin, MethodCallHandler, 
   private List<Map<String, Object>> convertProtoMessages(ProtoMessage[] protoDatas) {
     List output = new ArrayList();
     for (ProtoMessage protoData:protoDatas) {
-      output.add(convertProtoMessage(protoData));
+      output.add(0, convertProtoMessage(protoData));
     }
     return output;
   }
