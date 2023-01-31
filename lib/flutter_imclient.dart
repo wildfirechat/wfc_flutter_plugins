@@ -768,7 +768,13 @@ class FlutterImclient {
         await _convertProtoMessage(map['lastMessage']);
     conversationInfo.draft = map['draft'];
     if (map['timestamp'] != null) conversationInfo.timestamp = map['timestamp'];
-    if (map['isTop'] != null) conversationInfo.isTop = map['isTop'];
+    if (map['isTop'] != null) {
+      if(map['isTop'] is bool) {
+        conversationInfo.isTop = map['isTop'];
+      } else {
+        conversationInfo.isTop = map['isTop'] > 0;
+      }
+    }
     if (map['isSilent'] != null) conversationInfo.isSilent = map['isSilent'];
     conversationInfo.unreadCount = _convertProtoUnreadCount(map['unreadCount']);
 
@@ -1020,6 +1026,9 @@ class FlutterImclient {
   }
 
   static ChannelInfo _convertProtoChannelInfo(Map<dynamic, dynamic> map) {
+    if(map == null) {
+      return null;
+    }
     ChannelInfo channelInfo = new ChannelInfo();
     channelInfo.channelId = map['channelId'];
     channelInfo.desc = map['desc'];

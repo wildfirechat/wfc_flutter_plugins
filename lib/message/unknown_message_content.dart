@@ -13,4 +13,8 @@ class UnknownMessageContent extends MessageContent {
   Future<MessagePayload> encode() async{
     return rawPayload;
   }
+
+  @override
+  MessageContentMeta get meta => new MessageContentMeta(rawPayload.contentType,
+      MessageFlag.PERSIST, null);
 }

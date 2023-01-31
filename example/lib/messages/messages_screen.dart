@@ -61,7 +61,7 @@ class _State extends State<MessagesScreen> {
         if(element.conversation != widget.conversation) {
           return;
         }
-        if(element.content.meta.flag.index & 0x2 == 0) {
+        if(element.content.meta.flag.index & 0x1 == 0) {
           return;
         }
         haveNewMsg = true;
