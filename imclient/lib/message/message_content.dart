@@ -1,4 +1,3 @@
-
 /*
  * 说明：1000以下为系统保留类型，自定义消息请使用1000以上数值。
  * 系统消息类型中100以下为常用基本类型消息。100-199位群组消息类型。400-499为VoIP消息类型.
@@ -149,11 +148,13 @@ class MessageContent {
   int mentionedType;
   List<String>? mentionedTargets;
   String? extra;
+  String? pushContent;
 
   void decode(MessagePayload payload) {
     mentionedType = payload.mentionedType;
     mentionedTargets = payload.mentionedTargets;
     extra = payload.extra;
+    pushContent = payload.pushContent;
   }
 
   MessagePayload encode() {
@@ -164,12 +165,14 @@ class MessageContent {
     payload.contentType = meta.type;
     payload.mentionedType = 0;
     payload.mediaType = MediaType.Media_Type_GENERAL;
+    payload.pushContent = pushContent;
     return payload;
   }
 
-   Future<String> digest(Message message) async {
+  Future<String> digest(Message message) async {
     return '未知消息';
   }
 
-  MessageContentMeta get meta => const MessageContentMeta(0, MessageFlag.NOT_PERSIST, UnknownContentCreator);
+  MessageContentMeta get meta => const MessageContentMeta(
+      0, MessageFlag.NOT_PERSIST, UnknownContentCreator);
 }
