@@ -32,6 +32,8 @@ const int MESSAGE_CONTENT_TYPE_P_TEXT = 9;
 const int MESSAGE_CONTENT_TYPE_CARD = 10;
 //组合消息
 const int MESSAGE_CONTENT_TYPE_COMPOSITE_MESSAGE = 11;
+//礼物消息
+const int MESSAGE_CONTENT_Gift = 69;
 
 //撤回消息
 const int MESSAGE_CONTENT_TYPE_RECALL = 80;

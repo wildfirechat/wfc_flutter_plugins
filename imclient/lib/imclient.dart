@@ -1,4 +1,3 @@
-
 import 'package:event_bus/event_bus.dart';
 import 'package:flutter/services.dart';
 import 'package:imclient/model/friend.dart';
@@ -7,6 +6,7 @@ import 'imclient_platform_interface.dart';
 import 'message/card_message_content.dart';
 import 'message/composite_message_content.dart';
 import 'message/file_message_content.dart';
+import 'message/gift_message_content.dart';
 import 'message/image_message_content.dart';
 import 'message/link_message_content.dart';
 import 'message/location_message_content.dart';
@@ -58,12 +58,14 @@ import 'model/read_report.dart';
 import 'model/unread_count.dart';
 import 'model/user_info.dart';
 
-
 typedef ConnectionStatusChangedCallback = void Function(int status);
-typedef ReceiveMessageCallback = void Function(List<Message> messages, bool hasMore);
+typedef ReceiveMessageCallback = void Function(
+    List<Message> messages, bool hasMore);
 
-typedef SendMessageSuccessCallback = void Function(int messageUid, int timestamp);
-typedef SendMediaMessageProgressCallback = void Function(int uploaded, int total);
+typedef SendMessageSuccessCallback = void Function(
+    int messageUid, int timestamp);
+typedef SendMediaMessageProgressCallback = void Function(
+    int uploaded, int total);
 typedef SendMediaMessageUploadedCallback = void Function(String remoteUrl);
 
 typedef RecallMessageCallback = void Function(int messageUid);
@@ -78,34 +80,42 @@ typedef GroupMemberUpdatedCallback = void Function(
 typedef UserInfoUpdatedCallback = void Function(List<UserInfo> userInfos);
 
 typedef FriendListUpdatedCallback = void Function(List<String> newFriends);
-typedef FriendRequestListUpdatedCallback = void Function(List<String> newRequests);
+typedef FriendRequestListUpdatedCallback = void Function(
+    List<String> newRequests);
 
 typedef UserSettingsUpdatedCallback = void Function();
 
-typedef ChannelInfoUpdatedCallback = void Function(List<ChannelInfo> channelInfos);
+typedef ChannelInfoUpdatedCallback = void Function(
+    List<ChannelInfo> channelInfos);
 
 typedef OperationFailureCallback = void Function(int errorCode);
 typedef OperationSuccessVoidCallback = void Function();
 typedef OperationSuccessIntCallback = void Function(int i);
 typedef OperationSuccessIntPairCallback = void Function(int first, int second);
 typedef OperationSuccessStringCallback = void Function(String strValue);
-typedef OperationSuccessMessagesCallback = void Function(List<Message> messages);
+typedef OperationSuccessMessagesCallback = void Function(
+    List<Message> messages);
 typedef OperationSuccessMessageCallback = void Function(Message message);
-typedef OperationSuccessUserInfosCallback = void Function(List<UserInfo>? userInfos);
+typedef OperationSuccessUserInfosCallback = void Function(
+    List<UserInfo>? userInfos);
 typedef OperationSuccessUserInfoCallback = void Function(UserInfo userInfo);
-typedef OperationSuccessGroupMembersCallback = void Function(List<GroupMember> members);
+typedef OperationSuccessGroupMembersCallback = void Function(
+    List<GroupMember> members);
 typedef OperationSuccessGroupInfoCallback = void Function(GroupInfo groupInfo);
-typedef OperationSuccessChannelInfoCallback = void Function(ChannelInfo channelInfo);
+typedef OperationSuccessChannelInfoCallback = void Function(
+    ChannelInfo channelInfo);
 typedef OperationSuccessChannelInfosCallback = void Function(
     List<ChannelInfo> channelInfos);
 typedef OperationSuccessFilesCallback = void Function(List<FileRecord> files);
-typedef OperationSuccessChatroomInfoCallback = void Function(ChatroomInfo chatroomInfo);
+typedef OperationSuccessChatroomInfoCallback = void Function(
+    ChatroomInfo chatroomInfo);
 typedef OperationSuccessChatroomMemberInfoCallback = void Function(
     ChatroomMemberInfo memberInfo);
-typedef OperationSuccessStringListCallback = void Function(List<String> strValues);
+typedef OperationSuccessStringListCallback = void Function(
+    List<String> strValues);
 
-typedef GetUploadUrlSuccessCallback = void Function(String uploadUrl, String downloadUrl, String backupUploadUrl, int type);
-
+typedef GetUploadUrlSuccessCallback = void Function(
+    String uploadUrl, String downloadUrl, String backupUploadUrl, int type);
 
 /// 客户端和服务器之间的时间差值过大
 /// 出现此错误时需要校准时间
@@ -238,7 +248,6 @@ class ClearConversationsUnreadEvent {
 
 class ClearFriendRequestUnreadEvent {}
 
-
 class Imclient {
   static EventBus get IMEventBus {
     return ImclientPlatform.instance.IMEventBus;
@@ -325,15 +334,16 @@ class Imclient {
   }
 
   ///设置代理
-  static Future<void> setProxyInfo(String host, String ip, int port, {String? userName, String? password}) async {
-    return ImclientPlatform.instance.setProxyInfo(host, ip, port, userName:userName, password:password);
+  static Future<void> setProxyInfo(String host, String ip, int port,
+      {String? userName, String? password}) async {
+    return ImclientPlatform.instance
+        .setProxyInfo(host, ip, port, userName: userName, password: password);
   }
 
   ///协议栈版本
   static Future<String> get protoRevision async {
     return ImclientPlatform.instance.protoRevision;
   }
-
 
   ///获取协议栈日志文件路径
   static Future<List<String>> get logFilesPath async {
@@ -347,15 +357,14 @@ class Imclient {
       RecallMessageCallback recallMessageCallback,
       DeleteMessageCallback deleteMessageCallback,
       {MessageDeliveriedCallback? messageDeliveriedCallback,
-        MessageReadedCallback? messageReadedCallback,
-        GroupInfoUpdatedCallback? groupInfoUpdatedCallback,
-        GroupMemberUpdatedCallback? groupMemberUpdatedCallback,
-        UserInfoUpdatedCallback? userInfoUpdatedCallback,
-        FriendListUpdatedCallback? friendListUpdatedCallback,
-        FriendRequestListUpdatedCallback? friendRequestListUpdatedCallback,
-        UserSettingsUpdatedCallback? userSettingsUpdatedCallback,
-        ChannelInfoUpdatedCallback? channelInfoUpdatedCallback}) async {
-
+      MessageReadedCallback? messageReadedCallback,
+      GroupInfoUpdatedCallback? groupInfoUpdatedCallback,
+      GroupMemberUpdatedCallback? groupMemberUpdatedCallback,
+      UserInfoUpdatedCallback? userInfoUpdatedCallback,
+      FriendListUpdatedCallback? friendListUpdatedCallback,
+      FriendRequestListUpdatedCallback? friendRequestListUpdatedCallback,
+      UserSettingsUpdatedCallback? userSettingsUpdatedCallback,
+      ChannelInfoUpdatedCallback? channelInfoUpdatedCallback}) async {
     registerMessageContent(addGroupMemberNotificationContentMeta);
     registerMessageContent(changeGroupNameNotificationContentMeta);
     registerMessageContent(changeGroupPortraitNotificationContentMeta);
@@ -391,11 +400,10 @@ class Imclient {
     registerMessageContent(textContentMeta);
     registerMessageContent(typingContentMeta);
     registerMessageContent(videoContentMeta);
+    registerMessageContent(giftMessageContentMeta);
 
     ImclientPlatform.instance.init(connectionStatusChangedCallback,
-        receiveMessageCallback,
-        recallMessageCallback,
-        deleteMessageCallback,
+        receiveMessageCallback, recallMessageCallback, deleteMessageCallback,
         messageDeliveriedCallback: messageDeliveriedCallback,
         messageReadedCallback: messageReadedCallback,
         groupInfoUpdatedCallback: groupInfoUpdatedCallback,
@@ -423,7 +431,8 @@ class Imclient {
   /// * clearSession 是否清除session
   static Future<void> disconnect(
       {bool disablePush = false, bool clearSession = false}) async {
-    return ImclientPlatform.instance.disconnect(disablePush: disablePush, clearSession: clearSession);
+    return ImclientPlatform.instance
+        .disconnect(disablePush: disablePush, clearSession: clearSession);
   }
 
   ///获取会话列表
@@ -447,7 +456,8 @@ class Imclient {
   ///移除会话
   static Future<void> removeConversation(
       Conversation conversation, bool clearMessage) async {
-    return ImclientPlatform.instance.removeConversation(conversation, clearMessage);
+    return ImclientPlatform.instance
+        .removeConversation(conversation, clearMessage);
   }
 
   ///设置/取消会话置顶
@@ -456,7 +466,8 @@ class Imclient {
       bool isTop,
       OperationSuccessVoidCallback successCallback,
       OperationFailureCallback errorCallback) {
-    ImclientPlatform.instance.setConversationTop(conversation, isTop, successCallback, errorCallback);
+    ImclientPlatform.instance.setConversationTop(
+        conversation, isTop, successCallback, errorCallback);
   }
 
   ///设置/取消会话免到扰
@@ -465,7 +476,8 @@ class Imclient {
       bool isSilent,
       OperationSuccessVoidCallback successCallback,
       OperationFailureCallback errorCallback) {
-    ImclientPlatform.instance.setConversationSilent(conversation, isSilent, successCallback, errorCallback);
+    ImclientPlatform.instance.setConversationSilent(
+        conversation, isSilent, successCallback, errorCallback);
   }
 
   ///保存草稿
@@ -477,7 +489,8 @@ class Imclient {
   ///设置会话时间戳
   static Future<void> setConversationTimestamp(
       Conversation conversation, int timestamp) async {
-    return ImclientPlatform.instance.setConversationTimestamp(conversation, timestamp);
+    return ImclientPlatform.instance
+        .setConversationTimestamp(conversation, timestamp);
   }
 
   ///设置会话中第一个未读消息ID
@@ -500,13 +513,15 @@ class Imclient {
   ///清除一个会话的未读状态
   static Future<bool> clearConversationUnreadStatus(
       Conversation conversation) async {
-    return ImclientPlatform.instance.clearConversationUnreadStatus(conversation);
+    return ImclientPlatform.instance
+        .clearConversationUnreadStatus(conversation);
   }
 
   ///清除某些类型会话的未读状态
   static Future<bool> clearConversationsUnreadStatus(
       List<ConversationType> types, List<int> lines) async {
-    return ImclientPlatform.instance.clearConversationsUnreadStatus(types, lines);
+    return ImclientPlatform.instance
+        .clearConversationsUnreadStatus(types, lines);
   }
 
   ///请求某条消息的未读状态
@@ -515,8 +530,10 @@ class Imclient {
   }
 
   ///设置会话为未读
-  static Future<bool> markAsUnRead(Conversation conversation, bool syncToOtherClient) async {
-    return ImclientPlatform.instance.markAsUnRead(conversation, syncToOtherClient);
+  static Future<bool> markAsUnRead(
+      Conversation conversation, bool syncToOtherClient) async {
+    return ImclientPlatform.instance
+        .markAsUnRead(conversation, syncToOtherClient);
   }
 
   ///获取会话的已读状态
@@ -540,21 +557,25 @@ class Imclient {
   static Future<List<Message>> getMessages(
       Conversation conversation, int fromIndex, int count,
       {List<int>? contentTypes, String? withUser}) async {
-    return ImclientPlatform.instance.getMessages(conversation, fromIndex, count, contentTypes: contentTypes, withUser: withUser);
+    return ImclientPlatform.instance.getMessages(conversation, fromIndex, count,
+        contentTypes: contentTypes, withUser: withUser);
   }
 
   ///根据消息状态获取会话的消息列表
   static Future<List<Message>> getMessagesByStatus(Conversation conversation,
       int fromIndex, int count, List<MessageStatus> messageStatus,
       {String? withUser}) async {
-    return ImclientPlatform.instance.getMessagesByStatus(conversation, fromIndex, count, messageStatus);
+    return ImclientPlatform.instance
+        .getMessagesByStatus(conversation, fromIndex, count, messageStatus);
   }
 
   ///获取某些类型会话的消息列表
   static Future<List<Message>> getConversationsMessages(
       List<ConversationType> types, List<int> lines, int fromIndex, int count,
       {List<int>? contentTypes, String? withUser}) async {
-    return ImclientPlatform.instance.getConversationsMessages(types, lines, fromIndex, count, contentTypes: contentTypes, withUser: withUser);
+    return ImclientPlatform.instance.getConversationsMessages(
+        types, lines, fromIndex, count,
+        contentTypes: contentTypes, withUser: withUser);
   }
 
   ///根据消息状态获取某些类型会话的消息列表
@@ -565,7 +586,9 @@ class Imclient {
       int count,
       List<MessageStatus> messageStatus,
       {String? withUser}) async {
-    return ImclientPlatform.instance.getConversationsMessageByStatus(types, lines, fromIndex, count, messageStatus, withUser: withUser);
+    return ImclientPlatform.instance.getConversationsMessageByStatus(
+        types, lines, fromIndex, count, messageStatus,
+        withUser: withUser);
   }
 
   ///获取远端历史消息
@@ -576,7 +599,9 @@ class Imclient {
       OperationSuccessMessagesCallback successCallback,
       OperationFailureCallback errorCallback,
       {List<int>? contentTypes}) {
-    ImclientPlatform.instance.getRemoteMessages(conversation, beforeMessageUid, count, successCallback, errorCallback, contentTypes: contentTypes);
+    ImclientPlatform.instance.getRemoteMessages(
+        conversation, beforeMessageUid, count, successCallback, errorCallback,
+        contentTypes: contentTypes);
   }
 
   ///获取服务器端的某条消息
@@ -584,7 +609,8 @@ class Imclient {
       int messageUid,
       OperationSuccessMessageCallback successCallback,
       OperationFailureCallback errorCallback) {
-    ImclientPlatform.instance.getRemoteMessage(messageUid, successCallback, errorCallback);
+    ImclientPlatform.instance
+        .getRemoteMessage(messageUid, successCallback, errorCallback);
   }
 
   ///根据消息Id获取消息
@@ -600,28 +626,31 @@ class Imclient {
   ///搜索某个会话内消息
   static Future<List<Message>> searchMessages(Conversation conversation,
       String keyword, bool order, int limit, int offset) async {
-    return ImclientPlatform.instance.searchMessages(conversation, keyword, order, limit, offset);
+    return ImclientPlatform.instance
+        .searchMessages(conversation, keyword, order, limit, offset);
   }
 
   ///搜索某些类会话内消息
   static Future<List<Message>> searchConversationsMessages(
-      List<ConversationType> types,
-      List<int> lines,
-      String keyword,
-      int fromIndex,
-      int count, {
-        List<int>? contentTypes,
-      }) async {
-    return ImclientPlatform.instance.searchConversationsMessages(types, lines, keyword, fromIndex, count, contentTypes: contentTypes);
+    List<ConversationType> types,
+    List<int> lines,
+    String keyword,
+    int fromIndex,
+    int count, {
+    List<int>? contentTypes,
+  }) async {
+    return ImclientPlatform.instance.searchConversationsMessages(
+        types, lines, keyword, fromIndex, count,
+        contentTypes: contentTypes);
   }
 
   ///发送消息
   static Future<Message> sendMessage(
       Conversation conversation, MessageContent content,
       {List<String>? toUsers,
-        int expireDuration = 0,
-        required SendMessageSuccessCallback successCallback,
-        required OperationFailureCallback errorCallback}) async {
+      int expireDuration = 0,
+      required SendMessageSuccessCallback successCallback,
+      required OperationFailureCallback errorCallback}) async {
     return sendMediaMessage(conversation, content,
         toUsers: toUsers,
         expireDuration: expireDuration,
@@ -633,20 +662,29 @@ class Imclient {
   static Future<Message> sendMediaMessage(
       Conversation conversation, MessageContent content,
       {List<String>? toUsers,
-        int expireDuration = 0,
-        required SendMessageSuccessCallback successCallback,
-        required OperationFailureCallback errorCallback,
-        SendMediaMessageProgressCallback? progressCallback,
-        SendMediaMessageUploadedCallback? uploadedCallback}) async {
-    return ImclientPlatform.instance.sendMediaMessage(conversation, content, toUsers: toUsers, expireDuration: expireDuration, successCallback: successCallback, errorCallback: errorCallback, progressCallback: progressCallback, uploadedCallback: uploadedCallback);
+      int expireDuration = 0,
+      required SendMessageSuccessCallback successCallback,
+      required OperationFailureCallback errorCallback,
+      SendMediaMessageProgressCallback? progressCallback,
+      SendMediaMessageUploadedCallback? uploadedCallback}) async {
+    return ImclientPlatform.instance.sendMediaMessage(conversation, content,
+        toUsers: toUsers,
+        expireDuration: expireDuration,
+        successCallback: successCallback,
+        errorCallback: errorCallback,
+        progressCallback: progressCallback,
+        uploadedCallback: uploadedCallback);
   }
 
   ///发送已保存消息
   static Future<bool> sendSavedMessage(int messageId,
       {int expireDuration = 0,
-        required SendMessageSuccessCallback successCallback,
-        required OperationFailureCallback errorCallback}) async {
-    return ImclientPlatform.instance.sendSavedMessage(messageId, expireDuration: expireDuration, successCallback: successCallback, errorCallback: errorCallback);
+      required SendMessageSuccessCallback successCallback,
+      required OperationFailureCallback errorCallback}) async {
+    return ImclientPlatform.instance.sendSavedMessage(messageId,
+        expireDuration: expireDuration,
+        successCallback: successCallback,
+        errorCallback: errorCallback);
   }
 
   static Future<bool> cancelSendingMessage(int messageId) async {
@@ -658,7 +696,8 @@ class Imclient {
       int messageUid,
       OperationSuccessVoidCallback successCallback,
       OperationFailureCallback errorCallback) async {
-    ImclientPlatform.instance.recallMessage(messageUid, successCallback, errorCallback);
+    ImclientPlatform.instance
+        .recallMessage(messageUid, successCallback, errorCallback);
   }
 
   ///上传媒体数据
@@ -669,7 +708,8 @@ class Imclient {
       OperationSuccessStringCallback successCallback,
       SendMediaMessageProgressCallback progressCallback,
       OperationFailureCallback errorCallback) {
-    ImclientPlatform.instance.uploadMedia(fileName, mediaData, mediaType, successCallback, progressCallback, errorCallback);
+    ImclientPlatform.instance.uploadMedia(fileName, mediaData, mediaType,
+        successCallback, progressCallback, errorCallback);
   }
 
   ///获取上传地址，仅支持大文件上传功能时可用
@@ -679,7 +719,8 @@ class Imclient {
       String contentType,
       GetUploadUrlSuccessCallback successCallback,
       OperationFailureCallback errorCallback) {
-    ImclientPlatform.instance.getMediaUploadUrl(fileName, mediaType, contentType, successCallback, errorCallback);
+    ImclientPlatform.instance.getMediaUploadUrl(
+        fileName, mediaType, contentType, successCallback, errorCallback);
   }
 
   ///是否支持大文件上传功能
@@ -698,23 +739,28 @@ class Imclient {
   }
 
   ///删除本地和远端消息，仅当专业版IM支持，专业版IM服务中超级群组不支持服务器端删除.
-  static void deleteRemoteMessage(int messageUid,
+  static void deleteRemoteMessage(
+      int messageUid,
       OperationSuccessVoidCallback successCallback,
       OperationFailureCallback errorCallback) {
-    ImclientPlatform.instance.deleteRemoteMessage(messageUid, successCallback, errorCallback);
+    ImclientPlatform.instance
+        .deleteRemoteMessage(messageUid, successCallback, errorCallback);
   }
 
   ///清空会话内消息
   static Future<bool> clearMessages(Conversation conversation,
       {int before = 0}) async {
-    return ImclientPlatform.instance.clearMessages(conversation, before: before);
+    return ImclientPlatform.instance
+        .clearMessages(conversation, before: before);
   }
 
   ///清除服务器端会话消息
-  static void clearRemoteConversationMessage(Conversation conversation,
+  static void clearRemoteConversationMessage(
+      Conversation conversation,
       OperationSuccessVoidCallback successCallback,
       OperationFailureCallback errorCallback) {
-    ImclientPlatform.instance.clearRemoteConversationMessage(conversation, successCallback, errorCallback);
+    ImclientPlatform.instance.clearRemoteConversationMessage(
+        conversation, successCallback, errorCallback);
   }
 
   ///设置消息已经播放
@@ -722,14 +768,17 @@ class Imclient {
     return ImclientPlatform.instance.setMediaMessagePlayed(messageId);
   }
 
-  static Future<bool> setMessageLocalExtra(int messageId, String localExtra) async {
-    return ImclientPlatform.instance.setMessageLocalExtra(messageId, localExtra);
+  static Future<bool> setMessageLocalExtra(
+      int messageId, String localExtra) async {
+    return ImclientPlatform.instance
+        .setMessageLocalExtra(messageId, localExtra);
   }
 
   ///插入消息
   static Future<Message> insertMessage(Conversation conversation, String sender,
       MessageContent content, int status, int serverTime) async {
-    return ImclientPlatform.instance.insertMessage(conversation, sender, content, status, serverTime);
+    return ImclientPlatform.instance
+        .insertMessage(conversation, sender, content, status, serverTime);
   }
 
   ///更新消息内容
@@ -740,10 +789,14 @@ class Imclient {
 
   ///更新消息内容
   static void updateRemoteMessageContent(
-      int messageUid, MessageContent content, bool distribute, bool updateLocal,
+      int messageUid,
+      MessageContent content,
+      bool distribute,
+      bool updateLocal,
       OperationSuccessVoidCallback successCallback,
       OperationFailureCallback errorCallback) {
-    ImclientPlatform.instance.updateRemoteMessageContent(messageUid, content, distribute, updateLocal, successCallback, errorCallback);
+    ImclientPlatform.instance.updateRemoteMessageContent(messageUid, content,
+        distribute, updateLocal, successCallback, errorCallback);
   }
 
   ///更新消息状态
@@ -760,7 +813,8 @@ class Imclient {
   ///获取用户信息
   static Future<UserInfo?> getUserInfo(String userId,
       {String? groupId, bool refresh = false}) async {
-    return ImclientPlatform.instance.getUserInfo(userId, groupId: groupId, refresh: refresh);
+    return ImclientPlatform.instance
+        .getUserInfo(userId, groupId: groupId, refresh: refresh);
   }
 
   ///批量获取用户信息
@@ -776,7 +830,8 @@ class Imclient {
       int page,
       OperationSuccessUserInfosCallback successCallback,
       OperationFailureCallback errorCallback) {
-    ImclientPlatform.instance.searchUser(keyword, searchType, page, successCallback, errorCallback);
+    ImclientPlatform.instance
+        .searchUser(keyword, searchType, page, successCallback, errorCallback);
   }
 
   ///异步获取用户信息
@@ -785,7 +840,9 @@ class Imclient {
       OperationSuccessUserInfoCallback successCallback,
       OperationFailureCallback errorCallback,
       {bool refresh = false}) {
-    ImclientPlatform.instance.getUserInfoAsync(userId, successCallback, errorCallback, refresh: refresh);
+    ImclientPlatform.instance.getUserInfoAsync(
+        userId, successCallback, errorCallback,
+        refresh: refresh);
   }
 
   ///是否是好友
@@ -849,7 +906,8 @@ class Imclient {
       String userId,
       OperationSuccessVoidCallback successCallback,
       OperationFailureCallback errorCallback) {
-    ImclientPlatform.instance.deleteFriend(userId, successCallback, errorCallback);
+    ImclientPlatform.instance
+        .deleteFriend(userId, successCallback, errorCallback);
   }
 
   ///发送好友请求
@@ -858,7 +916,8 @@ class Imclient {
       String reason,
       OperationSuccessVoidCallback successCallback,
       OperationFailureCallback errorCallback) {
-    ImclientPlatform.instance.sendFriendRequest(userId, reason, successCallback, errorCallback);
+    ImclientPlatform.instance
+        .sendFriendRequest(userId, reason, successCallback, errorCallback);
   }
 
   ///处理好友请求
@@ -868,7 +927,8 @@ class Imclient {
       String extra,
       OperationSuccessVoidCallback successCallback,
       OperationFailureCallback errorCallback) {
-    ImclientPlatform.instance.handleFriendRequest(userId, accept, extra, successCallback, errorCallback);
+    ImclientPlatform.instance.handleFriendRequest(
+        userId, accept, extra, successCallback, errorCallback);
   }
 
   ///获取好友备注名
@@ -882,7 +942,8 @@ class Imclient {
       String? alias,
       OperationSuccessVoidCallback successCallback,
       OperationFailureCallback errorCallback) {
-    ImclientPlatform.instance.setFriendAlias(friendId, alias, successCallback, errorCallback);
+    ImclientPlatform.instance
+        .setFriendAlias(friendId, alias, successCallback, errorCallback);
   }
 
   ///获取好友extra信息
@@ -906,7 +967,8 @@ class Imclient {
       bool isBlackListed,
       OperationSuccessVoidCallback successCallback,
       OperationFailureCallback errorCallback) {
-    ImclientPlatform.instance.setBlackList(userId, isBlackListed, successCallback, errorCallback);
+    ImclientPlatform.instance
+        .setBlackList(userId, isBlackListed, successCallback, errorCallback);
   }
 
   ///获取群成员列表
@@ -918,15 +980,19 @@ class Imclient {
   ///根据群成员类型获取群成员列表
   static Future<List<GroupMember>> getGroupMembersByTypes(
       String groupId, GroupMemberType memberType) async {
-    return ImclientPlatform.instance.getGroupMembersByTypes(groupId, memberType);
+    return ImclientPlatform.instance
+        .getGroupMembersByTypes(groupId, memberType);
   }
 
   ///异步获取群成员列表
   static void getGroupMembersAsync(String groupId,
       {bool refresh = false,
-        required OperationSuccessGroupMembersCallback successCallback,
-        required OperationFailureCallback errorCallback}) {
-    ImclientPlatform.instance.getGroupMembersAsync(groupId, refresh: refresh, successCallback: successCallback, errorCallback: errorCallback);
+      required OperationSuccessGroupMembersCallback successCallback,
+      required OperationFailureCallback errorCallback}) {
+    ImclientPlatform.instance.getGroupMembersAsync(groupId,
+        refresh: refresh,
+        successCallback: successCallback,
+        errorCallback: errorCallback);
   }
 
   ///获取群信息
@@ -938,9 +1004,12 @@ class Imclient {
   ///异步获取群信息
   static void getGroupInfoAsync(String groupId,
       {bool refresh = false,
-        required OperationSuccessGroupInfoCallback successCallback,
-        required OperationFailureCallback errorCallback}) {
-    ImclientPlatform.instance.getGroupInfoAsync(groupId, refresh: refresh, successCallback: successCallback, errorCallback: errorCallback);
+      required OperationSuccessGroupInfoCallback successCallback,
+      required OperationFailureCallback errorCallback}) {
+    ImclientPlatform.instance.getGroupInfoAsync(groupId,
+        refresh: refresh,
+        successCallback: successCallback,
+        errorCallback: errorCallback);
   }
 
   ///获取单个群成员信息
@@ -959,8 +1028,10 @@ class Imclient {
       OperationSuccessStringCallback successCallback,
       OperationFailureCallback errorCallback,
       {List<int>? notifyLines,
-        MessageContent? notifyContent}) {
-    ImclientPlatform.instance.createGroup(groupId, groupName, groupPortrait, type, members, successCallback, errorCallback, notifyLines: notifyLines, notifyContent: notifyContent);
+      MessageContent? notifyContent}) {
+    ImclientPlatform.instance.createGroup(groupId, groupName, groupPortrait,
+        type, members, successCallback, errorCallback,
+        notifyLines: notifyLines, notifyContent: notifyContent);
   }
 
   ///添加群成员
@@ -970,8 +1041,10 @@ class Imclient {
       OperationSuccessVoidCallback successCallback,
       OperationFailureCallback errorCallback,
       {List<int>? notifyLines,
-        MessageContent? notifyContent}) {
-    ImclientPlatform.instance.addGroupMembers(groupId, members, successCallback, errorCallback, notifyLines: notifyLines, notifyContent: notifyContent);
+      MessageContent? notifyContent}) {
+    ImclientPlatform.instance.addGroupMembers(
+        groupId, members, successCallback, errorCallback,
+        notifyLines: notifyLines, notifyContent: notifyContent);
   }
 
   ///移除群成员
@@ -981,8 +1054,10 @@ class Imclient {
       OperationSuccessVoidCallback successCallback,
       OperationFailureCallback errorCallback,
       {List<int>? notifyLines,
-        MessageContent? notifyContent}) {
-    ImclientPlatform.instance.kickoffGroupMembers(groupId, members, successCallback, errorCallback, notifyLines: notifyLines, notifyContent: notifyContent);
+      MessageContent? notifyContent}) {
+    ImclientPlatform.instance.kickoffGroupMembers(
+        groupId, members, successCallback, errorCallback,
+        notifyLines: notifyLines, notifyContent: notifyContent);
   }
 
   ///退出群组
@@ -991,8 +1066,9 @@ class Imclient {
       OperationSuccessVoidCallback successCallback,
       OperationFailureCallback errorCallback,
       {List<int>? notifyLines,
-        MessageContent? notifyContent}) {
-    ImclientPlatform.instance.quitGroup(groupId, successCallback, errorCallback, notifyLines: notifyLines, notifyContent: notifyContent);
+      MessageContent? notifyContent}) {
+    ImclientPlatform.instance.quitGroup(groupId, successCallback, errorCallback,
+        notifyLines: notifyLines, notifyContent: notifyContent);
   }
 
   ///解散群组
@@ -1001,8 +1077,10 @@ class Imclient {
       OperationSuccessVoidCallback successCallback,
       OperationFailureCallback errorCallback,
       {List<int>? notifyLines,
-        MessageContent? notifyContent}) {
-    ImclientPlatform.instance.dismissGroup(groupId, successCallback, errorCallback, notifyLines: notifyLines, notifyContent: notifyContent);
+      MessageContent? notifyContent}) {
+    ImclientPlatform.instance.dismissGroup(
+        groupId, successCallback, errorCallback,
+        notifyLines: notifyLines, notifyContent: notifyContent);
   }
 
   ///修改群组信息
@@ -1013,8 +1091,10 @@ class Imclient {
       OperationSuccessVoidCallback successCallback,
       OperationFailureCallback errorCallback,
       {List<int>? notifyLines,
-        MessageContent? notifyContent}) {
-    ImclientPlatform.instance.modifyGroupInfo(groupId, modifyType, newValue, successCallback, errorCallback, notifyLines: notifyLines, notifyContent: notifyContent);
+      MessageContent? notifyContent}) {
+    ImclientPlatform.instance.modifyGroupInfo(
+        groupId, modifyType, newValue, successCallback, errorCallback,
+        notifyLines: notifyLines, notifyContent: notifyContent);
   }
 
   ///修改自己的群名片
@@ -1024,8 +1104,10 @@ class Imclient {
       OperationSuccessVoidCallback successCallback,
       OperationFailureCallback errorCallback,
       {List<int>? notifyLines,
-        MessageContent? notifyContent}) {
-    ImclientPlatform.instance.modifyGroupAlias(groupId, newAlias, successCallback, errorCallback, notifyLines: notifyLines, notifyContent: notifyContent);
+      MessageContent? notifyContent}) {
+    ImclientPlatform.instance.modifyGroupAlias(
+        groupId, newAlias, successCallback, errorCallback,
+        notifyLines: notifyLines, notifyContent: notifyContent);
   }
 
   ///修改群成员的群名片
@@ -1036,8 +1118,10 @@ class Imclient {
       OperationSuccessVoidCallback successCallback,
       OperationFailureCallback errorCallback,
       {List<int>? notifyLines,
-        MessageContent? notifyContent}) {
-    ImclientPlatform.instance.modifyGroupMemberAlias(groupId, memberId, newAlias, successCallback, errorCallback, notifyLines: notifyLines, notifyContent: notifyContent);
+      MessageContent? notifyContent}) {
+    ImclientPlatform.instance.modifyGroupMemberAlias(
+        groupId, memberId, newAlias, successCallback, errorCallback,
+        notifyLines: notifyLines, notifyContent: notifyContent);
   }
 
   ///转移群组
@@ -1047,8 +1131,10 @@ class Imclient {
       OperationSuccessVoidCallback successCallback,
       OperationFailureCallback errorCallback,
       {List<int>? notifyLines,
-        MessageContent? notifyContent}) {
-    ImclientPlatform.instance.transferGroup(groupId, newOwner, successCallback, errorCallback, notifyLines: notifyLines, notifyContent: notifyContent);
+      MessageContent? notifyContent}) {
+    ImclientPlatform.instance.transferGroup(
+        groupId, newOwner, successCallback, errorCallback,
+        notifyLines: notifyLines, notifyContent: notifyContent);
   }
 
   ///设置/取消群管理员
@@ -1059,8 +1145,10 @@ class Imclient {
       OperationSuccessVoidCallback successCallback,
       OperationFailureCallback errorCallback,
       {List<int>? notifyLines,
-        MessageContent? notifyContent}) {
-    ImclientPlatform.instance.setGroupManager(groupId, isSet, memberIds, successCallback, errorCallback, notifyLines: notifyLines, notifyContent: notifyContent);
+      MessageContent? notifyContent}) {
+    ImclientPlatform.instance.setGroupManager(
+        groupId, isSet, memberIds, successCallback, errorCallback,
+        notifyLines: notifyLines, notifyContent: notifyContent);
   }
 
   ///禁言/取消禁言群成员
@@ -1071,8 +1159,10 @@ class Imclient {
       OperationSuccessVoidCallback successCallback,
       OperationFailureCallback errorCallback,
       {List<int>? notifyLines,
-        MessageContent? notifyContent}) {
-    ImclientPlatform.instance.muteGroupMember(groupId, isSet, memberIds, successCallback, errorCallback, notifyLines: notifyLines, notifyContent: notifyContent);
+      MessageContent? notifyContent}) {
+    ImclientPlatform.instance.muteGroupMember(
+        groupId, isSet, memberIds, successCallback, errorCallback,
+        notifyLines: notifyLines, notifyContent: notifyContent);
   }
 
   ///设置/取消群白名单
@@ -1083,20 +1173,23 @@ class Imclient {
       OperationSuccessVoidCallback successCallback,
       OperationFailureCallback errorCallback,
       {List<int>? notifyLines,
-        MessageContent? notifyContent}) {
-    ImclientPlatform.instance.allowGroupMember(groupId, isSet, memberIds,
-        successCallback, errorCallback, notifyLines: notifyLines, notifyContent: notifyContent);
+      MessageContent? notifyContent}) {
+    ImclientPlatform.instance.allowGroupMember(
+        groupId, isSet, memberIds, successCallback, errorCallback,
+        notifyLines: notifyLines, notifyContent: notifyContent);
   }
 
   static Future<String> getGroupRemark(String groupId) async {
     return ImclientPlatform.instance.getGroupRemark(groupId);
   }
 
-  static void setGroupRemark(String groupId, String remark,
+  static void setGroupRemark(
+      String groupId,
+      String remark,
       OperationSuccessVoidCallback successCallback,
       OperationFailureCallback errorCallback) {
-    ImclientPlatform.instance.setGroupRemark(groupId, remark,
-        successCallback, errorCallback);
+    ImclientPlatform.instance
+        .setGroupRemark(groupId, remark, successCallback, errorCallback);
   }
 
   ///获取收藏群组列表
@@ -1115,7 +1208,8 @@ class Imclient {
       bool isFav,
       OperationSuccessVoidCallback successCallback,
       OperationFailureCallback errorCallback) {
-    ImclientPlatform.instance.setFavGroup(groupId, isFav, successCallback, errorCallback);
+    ImclientPlatform.instance
+        .setFavGroup(groupId, isFav, successCallback, errorCallback);
   }
 
   ///获取用户设置
@@ -1135,7 +1229,8 @@ class Imclient {
       String value,
       OperationSuccessVoidCallback successCallback,
       OperationFailureCallback errorCallback) {
-    ImclientPlatform.instance.setUserSetting(scope, key, value, successCallback, errorCallback);
+    ImclientPlatform.instance
+        .setUserSetting(scope, key, value, successCallback, errorCallback);
   }
 
   ///修改当前用户信息
@@ -1143,7 +1238,8 @@ class Imclient {
       Map<ModifyMyInfoType, String> values,
       OperationSuccessVoidCallback successCallback,
       OperationFailureCallback errorCallback) {
-    ImclientPlatform.instance.modifyMyInfo(values, successCallback, errorCallback);
+    ImclientPlatform.instance
+        .modifyMyInfo(values, successCallback, errorCallback);
   }
 
   ///是否全局静音
@@ -1156,7 +1252,8 @@ class Imclient {
       bool isSilent,
       OperationSuccessVoidCallback successCallback,
       OperationFailureCallback errorCallback) {
-    ImclientPlatform.instance.setGlobalSilent(isSilent, successCallback, errorCallback);
+    ImclientPlatform.instance
+        .setGlobalSilent(isSilent, successCallback, errorCallback);
   }
 
   static Future<bool> isVoipNotificationSilent() async {
@@ -1167,7 +1264,8 @@ class Imclient {
       bool isSilent,
       OperationSuccessVoidCallback successCallback,
       OperationFailureCallback errorCallback) {
-    ImclientPlatform.instance.setVoipNotificationSilent(isSilent, successCallback, errorCallback);
+    ImclientPlatform.instance
+        .setVoipNotificationSilent(isSilent, successCallback, errorCallback);
   }
 
   static Future<bool> isEnableSyncDraft() async {
@@ -1178,14 +1276,16 @@ class Imclient {
       bool enable,
       OperationSuccessVoidCallback successCallback,
       OperationFailureCallback errorCallback) {
-    ImclientPlatform.instance.setEnableSyncDraft(enable, successCallback, errorCallback);
+    ImclientPlatform.instance
+        .setEnableSyncDraft(enable, successCallback, errorCallback);
   }
 
   ///获取免打扰时间段
   static void getNoDisturbingTimes(
       OperationSuccessIntPairCallback successCallback,
       OperationFailureCallback errorCallback) {
-    ImclientPlatform.instance.getNoDisturbingTimes(successCallback, errorCallback);
+    ImclientPlatform.instance
+        .getNoDisturbingTimes(successCallback, errorCallback);
   }
 
   ///设置免打扰时间段
@@ -1194,14 +1294,16 @@ class Imclient {
       int endMins,
       OperationSuccessVoidCallback successCallback,
       OperationFailureCallback errorCallback) {
-    ImclientPlatform.instance.setNoDisturbingTimes(startMins, endMins, successCallback, errorCallback);
+    ImclientPlatform.instance.setNoDisturbingTimes(
+        startMins, endMins, successCallback, errorCallback);
   }
 
   ///取消免打扰时间段
   static void clearNoDisturbingTimes(
       OperationSuccessVoidCallback successCallback,
       OperationFailureCallback errorCallback) {
-    ImclientPlatform.instance.clearNoDisturbingTimes(successCallback, errorCallback);
+    ImclientPlatform.instance
+        .clearNoDisturbingTimes(successCallback, errorCallback);
   }
 
   static Future<bool> isNoDisturbing() async {
@@ -1218,7 +1320,8 @@ class Imclient {
       bool isHidden,
       OperationSuccessVoidCallback successCallback,
       OperationFailureCallback errorCallback) {
-    ImclientPlatform.instance.setHiddenNotificationDetail(isHidden, successCallback, errorCallback);
+    ImclientPlatform.instance
+        .setHiddenNotificationDetail(isHidden, successCallback, errorCallback);
   }
 
   ///是否群组隐藏用户名
@@ -1231,21 +1334,22 @@ class Imclient {
       bool isHidden,
       OperationSuccessVoidCallback successCallback,
       OperationFailureCallback errorCallback) {
-    ImclientPlatform.instance.setHiddenGroupMemberName(isHidden, successCallback, errorCallback);
+    ImclientPlatform.instance
+        .setHiddenGroupMemberName(isHidden, successCallback, errorCallback);
   }
 
-  static void getMyGroups(
-      OperationSuccessStringListCallback successCallback,
+  static void getMyGroups(OperationSuccessStringListCallback successCallback,
       OperationFailureCallback errorCallback) {
     ImclientPlatform.instance.getMyGroups(successCallback, errorCallback);
   }
 
-  static void getCommonGroups(String userId,
+  static void getCommonGroups(
+      String userId,
       OperationSuccessStringListCallback successCallback,
       OperationFailureCallback errorCallback) {
-    ImclientPlatform.instance.getCommonGroups(userId, successCallback, errorCallback);
+    ImclientPlatform.instance
+        .getCommonGroups(userId, successCallback, errorCallback);
   }
-
 
   ///当前用户是否启用回执功能
   static Future<bool> isUserEnableReceipt() async {
@@ -1257,7 +1361,8 @@ class Imclient {
       bool isEnable,
       OperationSuccessVoidCallback successCallback,
       OperationFailureCallback errorCallback) {
-    ImclientPlatform.instance.setUserEnableReceipt(isEnable, successCallback, errorCallback);
+    ImclientPlatform.instance
+        .setUserEnableReceipt(isEnable, successCallback, errorCallback);
   }
 
   ///获取收藏好友列表
@@ -1276,7 +1381,8 @@ class Imclient {
       bool isFav,
       OperationSuccessVoidCallback successCallback,
       OperationFailureCallback errorCallback) {
-    ImclientPlatform.instance.setFavUser(userId, isFav, successCallback, errorCallback);
+    ImclientPlatform.instance
+        .setFavUser(userId, isFav, successCallback, errorCallback);
   }
 
   ///加入聊天室
@@ -1284,7 +1390,8 @@ class Imclient {
       String chatroomId,
       OperationSuccessVoidCallback successCallback,
       OperationFailureCallback errorCallback) {
-    ImclientPlatform.instance.joinChatroom(chatroomId, successCallback, errorCallback);
+    ImclientPlatform.instance
+        .joinChatroom(chatroomId, successCallback, errorCallback);
   }
 
   ///退出聊天室
@@ -1292,7 +1399,8 @@ class Imclient {
       String chatroomId,
       OperationSuccessVoidCallback successCallback,
       OperationFailureCallback errorCallback) {
-    ImclientPlatform.instance.quitChatroom(chatroomId, successCallback, errorCallback);
+    ImclientPlatform.instance
+        .quitChatroom(chatroomId, successCallback, errorCallback);
   }
 
   ///获取聊天室信息
@@ -1301,7 +1409,8 @@ class Imclient {
       int updateDt,
       OperationSuccessChatroomInfoCallback successCallback,
       OperationFailureCallback errorCallback) {
-    ImclientPlatform.instance.getChatroomInfo(chatroomId, updateDt, successCallback, errorCallback);
+    ImclientPlatform.instance
+        .getChatroomInfo(chatroomId, updateDt, successCallback, errorCallback);
   }
 
   ///获取聊天室成员信息
@@ -1309,7 +1418,8 @@ class Imclient {
       String chatroomId,
       OperationSuccessChatroomMemberInfoCallback successCallback,
       OperationFailureCallback errorCallback) {
-    ImclientPlatform.instance.getChatroomMemberInfo(chatroomId, successCallback, errorCallback);
+    ImclientPlatform.instance
+        .getChatroomMemberInfo(chatroomId, successCallback, errorCallback);
   }
 
   ///创建频道
@@ -1321,13 +1431,15 @@ class Imclient {
       String extra,
       OperationSuccessChannelInfoCallback successCallback,
       OperationFailureCallback errorCallback) {
-    ImclientPlatform.instance.createChannel(channelName, channelPortrait, status, desc, extra, successCallback, errorCallback);
+    ImclientPlatform.instance.createChannel(channelName, channelPortrait,
+        status, desc, extra, successCallback, errorCallback);
   }
 
   ///获取频道信息
   static Future<ChannelInfo?> getChannelInfo(String channelId,
       {bool refresh = false}) async {
-    return ImclientPlatform.instance.getChannelInfo(channelId, refresh: refresh);
+    return ImclientPlatform.instance
+        .getChannelInfo(channelId, refresh: refresh);
   }
 
   ///修改频道信息
@@ -1337,7 +1449,8 @@ class Imclient {
       String newValue,
       OperationSuccessVoidCallback successCallback,
       OperationFailureCallback errorCallback) {
-    ImclientPlatform.instance.modifyChannelInfo(channelId, modifyType, newValue, successCallback, errorCallback);
+    ImclientPlatform.instance.modifyChannelInfo(
+        channelId, modifyType, newValue, successCallback, errorCallback);
   }
 
   ///搜索频道
@@ -1345,7 +1458,8 @@ class Imclient {
       String keyword,
       OperationSuccessChannelInfosCallback successCallback,
       OperationFailureCallback errorCallback) {
-    ImclientPlatform.instance.searchChannel(keyword, successCallback, errorCallback);
+    ImclientPlatform.instance
+        .searchChannel(keyword, successCallback, errorCallback);
   }
 
   ///是否是已订阅频道
@@ -1359,7 +1473,8 @@ class Imclient {
       bool isListen,
       OperationSuccessVoidCallback successCallback,
       OperationFailureCallback errorCallback) {
-    ImclientPlatform.instance.listenChannel(channelId, isListen, successCallback, errorCallback);
+    ImclientPlatform.instance
+        .listenChannel(channelId, isListen, successCallback, errorCallback);
   }
 
   ///获取我的频道
@@ -1377,7 +1492,8 @@ class Imclient {
       String channelId,
       OperationSuccessVoidCallback successCallback,
       OperationFailureCallback errorCallback) {
-    ImclientPlatform.instance.destroyChannel(channelId, successCallback, errorCallback);
+    ImclientPlatform.instance
+        .destroyChannel(channelId, successCallback, errorCallback);
   }
 
   ///获取PC端在线状态
@@ -1390,7 +1506,8 @@ class Imclient {
       String clientId,
       OperationSuccessVoidCallback successCallback,
       OperationFailureCallback errorCallback) {
-    ImclientPlatform.instance.kickoffPCClient(clientId, successCallback, errorCallback);
+    ImclientPlatform.instance
+        .kickoffPCClient(clientId, successCallback, errorCallback);
   }
 
   ///是否设置当PC在线时停止手机通知
@@ -1403,7 +1520,8 @@ class Imclient {
       bool isMute,
       OperationSuccessVoidCallback successCallback,
       OperationFailureCallback errorCallback) {
-    ImclientPlatform.instance.muteNotificationWhenPcOnline(isMute, successCallback, errorCallback);
+    ImclientPlatform.instance
+        .muteNotificationWhenPcOnline(isMute, successCallback, errorCallback);
   }
 
   ///获取会话文件记录
@@ -1413,8 +1531,10 @@ class Imclient {
       OperationSuccessFilesCallback successCallback,
       OperationFailureCallback errorCallback,
       {Conversation? conversation,
-        String? fromUser}) {
-    ImclientPlatform.instance.getConversationFiles(beforeMessageUid, count, successCallback, errorCallback, conversation: conversation, fromUser: fromUser);
+      String? fromUser}) {
+    ImclientPlatform.instance.getConversationFiles(
+        beforeMessageUid, count, successCallback, errorCallback,
+        conversation: conversation, fromUser: fromUser);
   }
 
   ///获取我的文件记录
@@ -1423,7 +1543,8 @@ class Imclient {
       int count,
       OperationSuccessFilesCallback successCallback,
       OperationFailureCallback errorCallback) {
-    ImclientPlatform.instance.getMyFiles(beforeMessageUid, count, successCallback, errorCallback);
+    ImclientPlatform.instance
+        .getMyFiles(beforeMessageUid, count, successCallback, errorCallback);
   }
 
   ///删除文件记录
@@ -1432,7 +1553,8 @@ class Imclient {
       int count,
       OperationSuccessFilesCallback successCallback,
       OperationFailureCallback errorCallback) {
-    ImclientPlatform.instance.deleteFileRecord(messageUid, count, successCallback, errorCallback);
+    ImclientPlatform.instance
+        .deleteFileRecord(messageUid, count, successCallback, errorCallback);
   }
 
   ///搜索文件记录
@@ -1443,8 +1565,10 @@ class Imclient {
       OperationSuccessFilesCallback successCallback,
       OperationFailureCallback errorCallback,
       {Conversation? conversation,
-        String? fromUser}) {
-    ImclientPlatform.instance.searchFiles(keyword, beforeMessageUid, count, successCallback, errorCallback, conversation: conversation, fromUser: fromUser);
+      String? fromUser}) {
+    ImclientPlatform.instance.searchFiles(
+        keyword, beforeMessageUid, count, successCallback, errorCallback,
+        conversation: conversation, fromUser: fromUser);
   }
 
   ///搜索我的文件记录
@@ -1454,7 +1578,8 @@ class Imclient {
       int count,
       OperationSuccessFilesCallback successCallback,
       OperationFailureCallback errorCallback) {
-    ImclientPlatform.instance.searchMyFiles(keyword, beforeMessageUid, count, successCallback, errorCallback);
+    ImclientPlatform.instance.searchMyFiles(
+        keyword, beforeMessageUid, count, successCallback, errorCallback);
   }
 
   ///获取经过授权的媒体路径
@@ -1464,7 +1589,8 @@ class Imclient {
       int mediaType,
       OperationSuccessStringCallback successCallback,
       OperationFailureCallback errorCallback) {
-    ImclientPlatform.instance.getAuthorizedMediaUrl(mediaPath, messageUid, mediaType, successCallback, errorCallback);
+    ImclientPlatform.instance.getAuthorizedMediaUrl(
+        mediaPath, messageUid, mediaType, successCallback, errorCallback);
   }
 
   static void getAuthCode(
@@ -1473,7 +1599,8 @@ class Imclient {
       String host,
       OperationSuccessStringCallback successCallback,
       OperationFailureCallback errorCallback) {
-    ImclientPlatform.instance.getAuthCode(applicationId, type, host, successCallback, errorCallback);
+    ImclientPlatform.instance
+        .getAuthCode(applicationId, type, host, successCallback, errorCallback);
   }
 
   static void configApplication(
@@ -1484,7 +1611,8 @@ class Imclient {
       String signature,
       OperationSuccessVoidCallback successCallback,
       OperationFailureCallback errorCallback) {
-    ImclientPlatform.instance.configApplication(applicationId, type, timestamp, nonce, signature, successCallback, errorCallback);
+    ImclientPlatform.instance.configApplication(applicationId, type, timestamp,
+        nonce, signature, successCallback, errorCallback);
   }
 
   ///转换amr数据为wav数据，仅在iOS平台有效
@@ -1506,7 +1634,6 @@ class Imclient {
   static Future<bool> rollbackTransaction() async {
     return ImclientPlatform.instance.rollbackTransaction();
   }
-
 
   ///是否是专业版
   static Future<bool> isCommercialServer() async {
