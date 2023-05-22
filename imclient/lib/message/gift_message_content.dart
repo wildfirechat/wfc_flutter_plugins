@@ -18,6 +18,7 @@ class GiftMessageContent extends MessageContent {
   late num giftVoucher;
   late int giftStatus;
   late String giftId;
+  late String presentId;
   late String title;
 
   @override
@@ -36,6 +37,7 @@ class GiftMessageContent extends MessageContent {
       giftVoucher = num.tryParse('${map['gift_voucher']}') ?? 0;
       giftStatus = int.tryParse('${map['gift_status']}') ?? 0;
       giftId = map['gift_id'] ?? '';
+      presentId = map['present_id'] ?? '';
     } else {
       giftName = "";
       giftCount = 0;
@@ -43,6 +45,7 @@ class GiftMessageContent extends MessageContent {
       giftVoucher = 0;
       giftStatus = 0;
       giftId = "";
+      presentId = "";
     }
   }
 
@@ -60,6 +63,7 @@ class GiftMessageContent extends MessageContent {
       'gift_status': giftStatus,
       'gift_voucher': giftVoucher,
       'gift_id': giftId,
+      'present_id': presentId,
     });
     return payload;
   }
