@@ -31,10 +31,10 @@ class GiftMessageContent extends MessageContent {
     if (payload.content != null) {
       var map = json.decode(payload.content!);
       giftName = map['gift_name'] ?? '';
-      giftCount = num.tryParse(map['gift_count']) ?? 0;
-      giftPrice = num.tryParse(map['gift_price']) ?? 0;
-      giftVoucher = num.tryParse(map['gift_voucher']) ?? 0;
-      giftStatus = int.tryParse(map['gift_status']) ?? 0;
+      giftCount = num.tryParse('${map['gift_count']}') ?? 0;
+      giftPrice = num.tryParse('${map['gift_price']}') ?? 0;
+      giftVoucher = num.tryParse('${map['gift_voucher']}') ?? 0;
+      giftStatus = int.tryParse('${map['gift_status']}') ?? 0;
       giftId = map['gift_id'] ?? '';
     } else {
       giftName = "";
