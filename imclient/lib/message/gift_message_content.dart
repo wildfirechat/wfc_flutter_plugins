@@ -13,7 +13,8 @@ const giftMessageContentMeta = MessageContentMeta(MESSAGE_CONTENT_Gift,
 
 class GiftMessageContent extends MessageContent {
   late String giftName;
-  late String giftVoucher;
+  late num giftCount;
+  late num giftPrice;
   late String giftStatus;
   late String giftId;
   late String title;
@@ -29,12 +30,14 @@ class GiftMessageContent extends MessageContent {
     if (payload.content != null) {
       var map = json.decode(payload.content!);
       giftName = map['gift_name'];
-      giftVoucher = map['gift_voucher'];
+      giftCount = num.tryParse(map['gift_count']) ?? 0;
+      giftPrice = num.tryParse(map['gift_price']) ?? 0;
       giftStatus = map['gift_status'];
       giftId = map['gift_id'];
     } else {
       giftName = "";
-      giftVoucher = "";
+      giftCount = 0;
+      giftPrice = 0;
       giftStatus = "";
       giftId = "";
     }
@@ -49,7 +52,8 @@ class GiftMessageContent extends MessageContent {
     payload.searchableContent = title;
     payload.content = json.encode({
       'gift_name': giftName,
-      'gift_voucher': giftVoucher,
+      'gift_count': giftCount,
+      'gift_price': giftPrice,
       'gift_status': giftStatus,
       'gift_id': giftId,
     });
