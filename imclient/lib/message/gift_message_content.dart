@@ -15,7 +15,8 @@ class GiftMessageContent extends MessageContent {
   late String giftName;
   late num giftCount;
   late num giftPrice;
-  late String giftStatus;
+  late num giftVoucher;
+  late int giftStatus;
   late String giftId;
   late String title;
 
@@ -29,16 +30,18 @@ class GiftMessageContent extends MessageContent {
     }
     if (payload.content != null) {
       var map = json.decode(payload.content!);
-      giftName = map['gift_name'];
+      giftName = map['gift_name'] ?? '';
       giftCount = num.tryParse(map['gift_count']) ?? 0;
       giftPrice = num.tryParse(map['gift_price']) ?? 0;
-      giftStatus = map['gift_status'];
-      giftId = map['gift_id'];
+      giftVoucher = num.tryParse(map['gift_voucher']) ?? 0;
+      giftStatus = int.tryParse(map['gift_status']) ?? 0;
+      giftId = map['gift_id'] ?? '';
     } else {
       giftName = "";
       giftCount = 0;
       giftPrice = 0;
-      giftStatus = "";
+      giftVoucher = 0;
+      giftStatus = 0;
       giftId = "";
     }
   }
@@ -55,6 +58,7 @@ class GiftMessageContent extends MessageContent {
       'gift_count': giftCount,
       'gift_price': giftPrice,
       'gift_status': giftStatus,
+      'gift_voucher': giftVoucher,
       'gift_id': giftId,
     });
     return payload;
