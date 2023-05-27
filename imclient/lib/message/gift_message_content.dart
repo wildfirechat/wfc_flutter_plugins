@@ -12,14 +12,19 @@ const giftMessageContentMeta = MessageContentMeta(MESSAGE_CONTENT_Gift,
     MessageFlag.PERSIST_AND_COUNT, GiftMessageContentCreator);
 
 class GiftMessageContent extends MessageContent {
-  late String giftName;
-  late num giftCount;
-  late num giftPrice;
-  late num giftVoucher;
-  late int giftStatus;
+  late String id;
   late String giftId;
-  late String presentId;
+  late num giftNum;
+  late String fromUserId;
+  late String toUserId;
+  late num voucher;
+  late num status;
+  late int expiryTime;
+  late String notes;
+  late int createTime;
+  late int updateTime;
   late String title;
+  late dynamic giftData;
 
   @override
   Future<void> decode(MessagePayload payload) async {
@@ -31,21 +36,32 @@ class GiftMessageContent extends MessageContent {
     }
     if (payload.content != null) {
       var map = json.decode(payload.content!);
-      giftName = map['gift_name'] ?? '';
-      giftCount = num.tryParse('${map['gift_count']}') ?? 0;
-      giftPrice = num.tryParse('${map['gift_price']}') ?? 0;
-      giftVoucher = num.tryParse('${map['gift_voucher']}') ?? 0;
-      giftStatus = int.tryParse('${map['gift_status']}') ?? 0;
+      id = map['id'] ?? '';
       giftId = map['gift_id'] ?? '';
-      presentId = map['present_id'] ?? '';
+      giftNum = num.tryParse('${map['gift_num'] ?? ""}') ?? 0;
+      fromUserId = map['from_user_id'] ?? '';
+      toUserId = map['to_user_id'] ?? '';
+      voucher = num.tryParse('${map['voucher'] ?? ""}') ?? 0;
+      status = num.tryParse('${map['status'] ?? ""}') ?? 0;
+      expiryTime = int.tryParse('${map['expiry_time'] ?? ""}') ?? 0;
+      notes = map['notes'] ?? '';
+      createTime = int.tryParse('${map['create_time'] ?? ""}') ?? 0;
+      updateTime = int.tryParse('${map['update_time'] ?? ""}') ?? 0;
+      giftData = map['gift_data'] ?? '';
     } else {
-      giftName = "";
-      giftCount = 0;
-      giftPrice = 0;
-      giftVoucher = 0;
-      giftStatus = 0;
+      id = "";
       giftId = "";
-      presentId = "";
+      giftNum = 0;
+      fromUserId = "";
+      toUserId = "";
+      voucher = 0;
+      status = 0;
+      expiryTime = 0;
+      notes = "";
+      giftId = "";
+      createTime = 0;
+      updateTime = 0;
+      giftData = {};
     }
   }
 
@@ -57,13 +73,18 @@ class GiftMessageContent extends MessageContent {
     MessagePayload payload = super.encode();
     payload.searchableContent = title;
     payload.content = json.encode({
-      'gift_name': giftName,
-      'gift_count': giftCount,
-      'gift_price': giftPrice,
-      'gift_status': giftStatus,
-      'gift_voucher': giftVoucher,
+      'id': id,
       'gift_id': giftId,
-      'present_id': presentId,
+      'gift_num': giftNum,
+      'from_user_id': fromUserId,
+      'to_user_id': toUserId,
+      'voucher': voucher,
+      'status': status,
+      'expiry_time': expiryTime,
+      'notes': notes,
+      'create_time': createTime,
+      'update_time': updateTime,
+      'gift_data': giftData,
     });
     return payload;
   }
