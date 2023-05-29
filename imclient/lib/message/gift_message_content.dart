@@ -12,19 +12,19 @@ const giftMessageContentMeta = MessageContentMeta(MESSAGE_CONTENT_Gift,
     MessageFlag.PERSIST_AND_COUNT, GiftMessageContentCreator);
 
 class GiftMessageContent extends MessageContent {
-  late String id;
-  late String giftId;
-  late num giftNum;
-  late String fromUserId;
-  late String toUserId;
-  late num voucher;
-  late num status;
-  late int expiryTime;
-  late String notes;
-  late int createTime;
-  late int updateTime;
-  late String title;
-  late dynamic giftData;
+  String? id;
+  String? giftId;
+  num? giftNum;
+  String? fromUserId;
+  String? toUserId;
+  num? voucher;
+  num? status;
+  int? expiryTime;
+  String? notes;
+  int? createTime;
+  int? updateTime;
+  String? title;
+  dynamic giftData;
 
   @override
   Future<void> decode(MessagePayload payload) async {
@@ -91,10 +91,9 @@ class GiftMessageContent extends MessageContent {
 
   @override
   Future<String> digest(Message message) async {
-    if (title.isNotEmpty) {
+    if (title?.isNotEmpty ?? false) {
       return '[礼物]:$title';
     }
-
     return '[礼物]';
   }
 }
