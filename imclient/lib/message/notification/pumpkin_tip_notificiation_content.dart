@@ -4,7 +4,6 @@ import 'dart:convert';
 import '../../model/message_payload.dart';
 import '../message.dart';
 import '../message_content.dart';
-import 'notification_message_content.dart';
 
 MessageContent pumpkinTipNotificationContentCreator() {
   return PumpkinTipNotificationContent();
@@ -12,10 +11,10 @@ MessageContent pumpkinTipNotificationContentCreator() {
 
 const pumpkinTipNotificationContentMeta = MessageContentMeta(
     MESSAGE_CONTENT_PUMPKIN_TIP,
-    MessageFlag.NOT_PERSIST,
+    MessageFlag.PERSIST_AND_COUNT,
     pumpkinTipNotificationContentCreator);
 
-class PumpkinTipNotificationContent extends NotificationMessageContent {
+class PumpkinTipNotificationContent extends MessageContent {
   static int SECRET_MESSAGE_MODE = 1;
   static int CLAIMED_GIFT = 2;
 
@@ -38,11 +37,6 @@ class PumpkinTipNotificationContent extends NotificationMessageContent {
 
   @override
   MessageContentMeta get meta => pumpkinTipNotificationContentMeta;
-
-  @override
-  Future<String> formatNotification(Message message) async {
-    return tip ?? "";
-  }
 
   @override
   MessagePayload encode() {
