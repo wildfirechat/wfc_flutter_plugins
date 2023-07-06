@@ -1,5 +1,6 @@
 import 'package:event_bus/event_bus.dart';
 import 'package:flutter/services.dart';
+import 'package:imclient/message/notification/pumpkin_tip_notificiation_content.dart';
 import 'package:imclient/model/friend.dart';
 
 import 'imclient_platform_interface.dart';
@@ -401,6 +402,7 @@ class Imclient {
     registerMessageContent(typingContentMeta);
     registerMessageContent(videoContentMeta);
     registerMessageContent(giftMessageContentMeta);
+    registerMessageContent(pumpkinTipNotificationContentMeta);
 
     ImclientPlatform.instance.init(connectionStatusChangedCallback,
         receiveMessageCallback, recallMessageCallback, deleteMessageCallback,
@@ -978,7 +980,8 @@ class Imclient {
   }
 
   ///获取指定数目的群成员列表
-  static Future<List<GroupMember>> getGroupMembersByCount(String groupId, int count) async {
+  static Future<List<GroupMember>> getGroupMembersByCount(
+      String groupId, int count) async {
     return ImclientPlatform.instance.getGroupMembersByCount(groupId, count);
   }
 
