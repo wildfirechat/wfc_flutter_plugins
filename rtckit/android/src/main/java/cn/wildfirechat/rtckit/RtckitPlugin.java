@@ -312,7 +312,7 @@ public class RtckitPlugin implements FlutterPlugin, MethodCallHandler, ActivityA
     }
 
     @Override
-    public void shouldSopRing() {
+    public void shouldStopRing() {
         Map data = new HashMap();
         callback2UI("shouldStopRingCallback", data);
     }
