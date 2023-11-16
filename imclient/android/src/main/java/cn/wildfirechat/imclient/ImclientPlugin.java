@@ -766,7 +766,7 @@ public class ImclientPlugin implements FlutterPlugin, MethodCallHandler {
         });
     }
 
-    public CallbackBuilder callbackBuilder(int requestId) {
+    private CallbackBuilder callbackBuilder(int requestId) {
         return new CallbackBuilder(requestId);
     }
 
@@ -881,6 +881,34 @@ public class ImclientPlugin implements FlutterPlugin, MethodCallHandler {
                     .put("uploaded", l)
                     .put("total", l1)
                     .success("onUploadMediaProgress");
+            }
+
+            @Override
+            public void onFail(int i) {
+                callbackBuilder(requestId).fail(i);
+            }
+        });
+    }
+
+    private void uploadMediaFile(@NonNull MethodCall call, @NonNull Result result) {
+        int requestId = call.argument("requestId");
+        String filePath = call.argument("filePath");
+        int mediaType = call.argument("mediaType");
+
+        ChatManager.Instance().uploadMediaFile(filePath, mediaType, new UploadMediaCallback() {
+            @Override
+            public void onSuccess(String s) {
+                callbackBuilder(requestId)
+                        .put("remoteUrl", s)
+                        .success("onUploadMediaUploaded");
+            }
+
+            @Override
+            public void onProgress(long l, long l1) {
+                callbackBuilder(requestId)
+                        .put("uploaded", l)
+                        .put("total", l1)
+                        .success("onUploadMediaProgress");
             }
 
             @Override
