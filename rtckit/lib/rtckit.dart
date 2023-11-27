@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:imclient/model/conversation.dart';
 import 'package:rtckit/rtckit_method_channel.dart';
 
+import 'conference/conference_delegate.dart';
+
 
 //CallSession状态
 const int kWFAVEngineStateIdle = 0;
@@ -438,6 +440,7 @@ typedef SelectMembersDelegate = void Function(BuildContext context, List<String>
 class Rtckit {
   static String defaultUserPortrait = 'assets/images/user_avatar_default.png';
   static SelectMembersDelegate? selectMembersDelegate;
+  static ConferenceDelegate? conferenceDelegate;
 
   static void init({DidReceiveCallCallback? didReceiveCallCallback, ShouldStartRingCallback? shouldStartRingCallback, ShouldStopRingCallback? shouldStopRingCallback, DidEndCallCallback? didEndCallCallback}) {
     RtckitPlatform.instance.initProto(didReceiveCallCallback, shouldStartRingCallback, shouldStopRingCallback, didEndCallCallback);
