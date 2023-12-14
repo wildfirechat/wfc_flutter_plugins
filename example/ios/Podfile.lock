@@ -65,10 +65,12 @@ PODS:
   - SDWebImage (5.17.0):
     - SDWebImage/Core (= 5.17.0)
   - SDWebImage/Core (5.17.0)
+  - sensors_plus (0.0.1):
+    - Flutter
   - shared_preferences_foundation (0.0.1):
     - Flutter
     - FlutterMacOS
-  - sqflite (0.0.2):
+  - sqflite (0.0.3):
     - Flutter
     - FMDB (>= 2.7.5)
   - SwiftyGif (5.4.4)
@@ -77,6 +79,7 @@ PODS:
     - Flutter
   - video_player_avfoundation (0.0.1):
     - Flutter
+    - FlutterMacOS
 
 DEPENDENCIES:
   - camera_avfoundation (from `.symlinks/plugins/camera_avfoundation/ios`)
@@ -91,10 +94,11 @@ DEPENDENCIES:
   - permission_handler_apple (from `.symlinks/plugins/permission_handler_apple/ios`)
   - photo_manager (from `.symlinks/plugins/photo_manager/ios`)
   - rtckit (from `.symlinks/plugins/rtckit/ios`)
+  - sensors_plus (from `.symlinks/plugins/sensors_plus/ios`)
   - shared_preferences_foundation (from `.symlinks/plugins/shared_preferences_foundation/darwin`)
   - sqflite (from `.symlinks/plugins/sqflite/ios`)
   - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
-  - video_player_avfoundation (from `.symlinks/plugins/video_player_avfoundation/ios`)
+  - video_player_avfoundation (from `.symlinks/plugins/video_player_avfoundation/darwin`)
 
 SPEC REPOS:
   trunk:
@@ -131,6 +135,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/photo_manager/ios"
   rtckit:
     :path: ".symlinks/plugins/rtckit/ios"
+  sensors_plus:
+    :path: ".symlinks/plugins/sensors_plus/ios"
   shared_preferences_foundation:
     :path: ".symlinks/plugins/shared_preferences_foundation/darwin"
   sqflite:
@@ -138,18 +144,18 @@ EXTERNAL SOURCES:
   url_launcher_ios:
     :path: ".symlinks/plugins/url_launcher_ios/ios"
   video_player_avfoundation:
-    :path: ".symlinks/plugins/video_player_avfoundation/ios"
+    :path: ".symlinks/plugins/video_player_avfoundation/darwin"
 
 SPEC CHECKSUMS:
   camera_avfoundation: 3125e8cd1a4387f6f31c6c63abb8a55892a9eeeb
   DKImagePickerController: b512c28220a2b8ac7419f21c491fc8534b7601ac
   DKPhotoGallery: fdfad5125a9fdda9cc57df834d49df790dbb4179
-  file_picker: ce3938a0df3cc1ef404671531facef740d03f920
+  file_picker: 15fd9539e4eb735dc54bae8c0534a7a9511a03de
   Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
   flutter_dynamic_icon: fb0cd2f84c817c1a0ddbbc383fbebec3cd5e88d8
   flutter_sound: c60effa2a350fb977885f0db2fbc4c1ad5160900
   flutter_sound_core: 26c10e5832e76aaacfae252d8925232281c486ae
-  fluttertoast: eb263d302cc92e04176c053d2385237e9f43fad0
+  fluttertoast: 31b00dabfa7fb7bacd9e7dbee580d7a2ff4bf265
   FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a
   image_picker_ios: 4a8aadfbb6dc30ad5141a2ce3832af9214a705b5
   imclient: f6c1a8cc36cba50958f4d4b27d226c2da3b37ade
@@ -158,13 +164,14 @@ SPEC CHECKSUMS:
   photo_manager: 4f6810b7dfc4feb03b461ac1a70dacf91fba7604
   rtckit: 2a5b4f82f16d8d622cfde03bde8523950e2a6e48
   SDWebImage: 750adf017a315a280c60fde706ab1e552a3ae4e9
-  shared_preferences_foundation: 986fc17f3d3251412d18b0265f9c64113a8c2472
-  sqflite: 6d358c025f5b867b29ed92fc697fd34924e11904
+  sensors_plus: 42b9de1b8237675fa8d8121e4bb93be0f79fa61d
+  shared_preferences_foundation: 5b919d13b803cadd15ed2dc053125c68730e5126
+  sqflite: 31f7eba61e3074736dff8807a9b41581e4f7f15a
   SwiftyGif: 93a1cc87bf3a51916001cf8f3d63835fb64c819f
   Toast: 91b396c56ee72a5790816f40d3a94dd357abc196
-  url_launcher_ios: 08a3dfac5fb39e8759aeb0abbd5d9480f30fc8b4
-  video_player_avfoundation: 81e49bb3d9fb63dccf9fa0f6d877dc3ddbeac126
+  url_launcher_ios: bf5ce03e0e2088bad9cc378ea97fa0ed5b49673b
+  video_player_avfoundation: e9e6f9cae7d7a6d9b43519b0aab382bca60fcfd1
 
 PODFILE CHECKSUM: c81fb3b9656ce02f4bb4f87bc9edf31ba14f8d8e
 
-COCOAPODS: 1.11.3
+COCOAPODS: 1.14.3

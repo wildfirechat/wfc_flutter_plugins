@@ -3340,7 +3340,7 @@ class ImclientPlatform extends PlatformInterface {
   Future<bool> isReceiptEnabled() async {
     return await methodChannel.invokeMethod("isReceiptEnabled");
   }
-  
+
   Future<bool> isGlobalDisableSyncDraft() async {
     return await methodChannel.invokeMethod("isGlobalDisableSyncDraft");
   }
