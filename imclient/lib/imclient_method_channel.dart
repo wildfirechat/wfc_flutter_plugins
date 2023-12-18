@@ -1463,7 +1463,7 @@ class ImclientPlatform extends PlatformInterface {
   @override
   Future<UnreadCount> getConversationUnreadCount(
       Conversation conversation) async {
-    Map<dynamic, dynamic> datas = await methodChannel.invokeMethod(
+    Map<dynamic, dynamic>? datas = await methodChannel.invokeMethod(
         'getConversationUnreadCount',
         {'conversation': _convertConversation(conversation)});
     return _convertProtoUnreadCount(datas);
@@ -1481,7 +1481,7 @@ class ImclientPlatform extends PlatformInterface {
       lines = [0];
     }
 
-    Map<dynamic, dynamic> datas = await methodChannel.invokeMethod(
+    Map<dynamic, dynamic>? datas = await methodChannel.invokeMethod(
         'getConversationsUnreadCount', {'types': itypes, 'lines': lines});
     return _convertProtoUnreadCount(datas);
   }
@@ -1545,13 +1545,15 @@ class ImclientPlatform extends PlatformInterface {
   @override
   Future<Map<String, int>> getConversationRead(
       Conversation conversation) async {
-    Map<dynamic, dynamic> datas = await methodChannel.invokeMethod(
+    Map<dynamic, dynamic>? datas = await methodChannel.invokeMethod(
         'getConversationRead',
         {'conversation': _convertConversation(conversation)});
     Map<String, int> map = {};
-    datas.forEach((key, value) {
-      map.putIfAbsent(key, () => value);
-    });
+    if(datas != null) {
+      datas.forEach((key, value) {
+        map.putIfAbsent(key, () => value);
+      });
+    }
     return map;
   }
 
@@ -1559,13 +1561,15 @@ class ImclientPlatform extends PlatformInterface {
   @override
   Future<Map<String, int>> getMessageDelivery(
       Conversation conversation) async {
-    Map<dynamic, dynamic> datas = await methodChannel.invokeMethod(
+    Map<dynamic, dynamic>? datas = await methodChannel.invokeMethod(
         'getMessageDelivery',
         {'conversation': _convertConversation(conversation)});
     Map<String, int> map = {};
-    datas.forEach((key, value) {
-      map.putIfAbsent(key, () => value);
-    });
+    if(datas != null) {
+      datas.forEach((key, value) {
+        map.putIfAbsent(key, () => value);
+      });
+    }
     return map;
   }
 
@@ -1720,7 +1724,7 @@ class ImclientPlatform extends PlatformInterface {
   ///根据消息Id获取消息
   @override
   Future<Message?> getMessage(int messageId) async {
-    Map<dynamic, dynamic> datas = await methodChannel
+    Map<dynamic, dynamic>? datas = await methodChannel
         .invokeMethod("getMessage", {"messageId": messageId});
     return _convertProtoMessage(datas);
   }
@@ -1728,7 +1732,7 @@ class ImclientPlatform extends PlatformInterface {
   ///根据消息Uid获取消息
   @override
   Future<Message?> getMessageByUid(int messageUid) async {
-    Map<dynamic, dynamic> datas = await methodChannel
+    Map<dynamic, dynamic>? datas = await methodChannel
         .invokeMethod("getMessageByUid", {"messageUid": messageUid});
     return _convertProtoMessage(datas);
   }
