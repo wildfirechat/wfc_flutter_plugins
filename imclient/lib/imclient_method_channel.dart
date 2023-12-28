@@ -2025,6 +2025,7 @@ class ImclientPlatform extends PlatformInterface {
       "conversation": _convertConversation(conversation),
       "content": _convertMessageContent(content),
       "status": status,
+      "sender": sender,
       "serverTime": serverTime
     });
     if (toUsers != null && toUsers.isNotEmpty) datas['toUsers'] = toUsers;
