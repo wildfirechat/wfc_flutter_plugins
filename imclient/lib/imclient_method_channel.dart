@@ -1971,7 +1971,11 @@ class ImclientPlatform extends PlatformInterface {
       OperationSuccessVoidCallback successCallback,
       OperationFailureCallback errorCallback) {
     int requestId = _requestId++;
-    _operationSuccessCallbackMap[requestId] = successCallback;
+    _operationSuccessCallbackMap[requestId] = () {
+      successCallback();
+      _eventBus.fire(DeleteMessageEvent(messageUid: messageUid));
+    };
+
     _errorCallbackMap[requestId] = errorCallback;
     methodChannel.invokeMethod('deleteRemoteMessage',
         {"requestId": requestId, "messageUid": messageUid});
