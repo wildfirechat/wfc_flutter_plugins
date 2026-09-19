@@ -34,6 +34,24 @@ target 'Runner' do
 end
 
 post_install do |installer|
+  # iOS 26+ 模拟器只支持 arm64(Xcode 27 在 Apple Silicon 上强制),x86_64
+  # 模拟器切片已无意义。收敛到 arm64 后 super_native_extensions 的产物走
+  # 单架构 Libtool(与真机同一条路径),避开 universal lipo 与 cargokit
+  # 预建符号链接的 EEXIST 冲突——该冲突在 Xcode 27 新构建系统下随增量
+  # 构建时好时坏。Runner 主工程同步收敛,否则链接 x86_64 时缺切片报错。
+  installer.pods_project.targets.each do |target|
+    target.build_configurations.each do |config|
+      config.build_settings['ARCHS[sdk=iphonesimulator*]'] = 'arm64'
+    end
+  end
+  user_project = installer.aggregate_targets.first&.user_project
+  user_project&.targets&.each do |target|
+    target.build_configurations.each do |config|
+      config.build_settings['ARCHS[sdk=iphonesimulator*]'] = 'arm64'
+    end
+  end
+  user_project&.save
+
   installer.pods_project.targets.each do |target|
     flutter_additional_ios_build_settings(target)
 

@@ -336,7 +336,7 @@ ShareService.instance.syncSharedDataOnBackground();
 把 `wfcchat://share` 替换为你自己的 scheme，同时修改：
 
 - `ios/Runner/Info.plist` 中的 `CFBundleURLSchemes`
-- `ios/Runner/AppDelegate.m` 中的 `application:openURL:options:`
+- `ios/Runner/AppDelegate.m` 中的 `application:openURL:options:`（URL 入口本身在同文件 `SceneDelegate` 的 `scene:openURLContexts:` —— iOS 26 起 UIKit 强制 UIScene 生命周期，UIApplication 层的 openURL 回调不再被调用，SceneDelegate 收到后转发给 AppDelegate 的该方法）
 
 如果不再需要扩展唤起主应用，也可以完全移除 URL Scheme 相关代码。
 

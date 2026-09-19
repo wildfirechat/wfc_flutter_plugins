@@ -30,11 +30,13 @@ static NSString * const kSharedAppServerAddressKey = @"wfc_share_appserver_addre
 
 @implementation AppDelegate
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    [GeneratedPluginRegistrant registerWithRegistry:self];
-
     UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
     center.delegate = self;
 
+    // UNUserNotificationCenterDelegate 必须在启动完成前设置(Apple 要求),
+    // 所以留在 didFinishLaunching;插件注册与 method channel 的创建挪到
+    // didInitializeImplicitFlutterEngine(iOS 26 起 UIScene 生命周期下,
+    // 引擎与根 FlutterViewController 在 scene 连接时才创建)。
     [center requestAuthorizationWithOptions:(UNAuthorizationOptionAlert | UNAuthorizationOptionSound | UNAuthorizationOptionBadge)
                           completionHandler:^(BOOL granted, NSError * _Nullable error) {
                               if (granted) {
@@ -46,38 +48,59 @@ static NSString * const kSharedAppServerAddressKey = @"wfc_share_appserver_addre
                               }
                           }];
 
-    BOOL result = [super application:application didFinishLaunchingWithOptions:launchOptions];
-    
-    if (result) {
-        FlutterViewController *controller = (FlutterViewController *)self.window.rootViewController;
+    // Flutter 在隐式引擎就绪时经此属性自动完成插件注册(pluginRegistrant
+    // 是实例方法协议,GeneratedPluginRegistrant 的实际调用见
+    // registerWithRegistry:)。
+    self.pluginRegistrant = self;
+
+    return [super application:application didFinishLaunchingWithOptions:launchOptions];
+}
+
+#pragma mark - FlutterPluginRegistrant
+
+/// UIScene 生命周期下 Flutter 在隐式引擎就绪的适当时机自动调用本方法完成
+/// 插件注册(通过 pluginRegistrant 属性)。不能挪到 didInitializeImplicit
+/// FlutterEngine 回调里做——实测该回调触发时引擎尚未就绪,经它注册插件
+/// 会在 FlutterEngine registrarForPlugin 处触发断言崩溃。
+- (void)registerWithRegistry:(NSObject<FlutterPluginRegistry> *)registry {
+    [GeneratedPluginRegistrant registerWithRegistry:registry];
+}
+
+#pragma mark - FlutterImplicitEngineDelegate
+
+/// 隐式 FlutterEngine 初始化完成(UIScene 生命周期下引擎创建时机后移)。
+/// 只在这里建自定义 method channel(经 engineBridge 取 binaryMessenger)——
+/// 插件注册走 pluginRegistrant 自动路径,见文件头 registerWithRegistry:。
+/// 注意此时 UIApplicationDelegate.window 还是 nil,
+/// 不能再走 self.window.rootViewController 的老路子。
+- (void)didInitializeImplicitFlutterEngine:(NSObject<FlutterImplicitEngineBridge> *)engineBridge {
+    NSObject<FlutterBinaryMessenger> *messenger = engineBridge.applicationRegistrar.messenger;
+
 #if USE_CALL_KIT
-        FlutterMethodChannel *callKitChannel = [FlutterMethodChannel
-            methodChannelWithName:@"chat.wildfire/callkit"
-                  binaryMessenger:controller.binaryMessenger];
-        self.callKitManager = [[WFCCallKitManager alloc] initWithMethodChannel:callKitChannel];
-        [self.callKitManager registerVoipPush];
+    FlutterMethodChannel *callKitChannel = [FlutterMethodChannel
+        methodChannelWithName:@"chat.wildfire/callkit"
+              binaryMessenger:messenger];
+    self.callKitManager = [[WFCCallKitManager alloc] initWithMethodChannel:callKitChannel];
+    [self.callKitManager registerVoipPush];
 #endif
-        
-        self.shareChannel = [FlutterMethodChannel
-            methodChannelWithName:@"chat.wildfire/share"
-                  binaryMessenger:controller.binaryMessenger];
-        [self.shareChannel setMethodCallHandler:^(FlutterMethodCall *call, FlutterResult result) {
-            if ([call.method isEqualToString:@"getPendingShareItems"]) {
-                result(self.pendingShareItems ?: @[]);
-                self.pendingShareItems = nil;
-            } else if ([call.method isEqualToString:@"saveSharedConversations"]) {
-                [self saveSharedConversations:call.arguments];
-                result(@"OK");
-            } else {
-                result(FlutterMethodNotImplemented);
-            }
-        }];
 
-        [self setupProximityChannel:controller];
-        [self setupAudioOutputChannel:controller];
-    }
+    self.shareChannel = [FlutterMethodChannel
+        methodChannelWithName:@"chat.wildfire/share"
+              binaryMessenger:messenger];
+    [self.shareChannel setMethodCallHandler:^(FlutterMethodCall *call, FlutterResult result) {
+        if ([call.method isEqualToString:@"getPendingShareItems"]) {
+            result(self.pendingShareItems ?: @[]);
+            self.pendingShareItems = nil;
+        } else if ([call.method isEqualToString:@"saveSharedConversations"]) {
+            [self saveSharedConversations:call.arguments];
+            result(@"OK");
+        } else {
+            result(FlutterMethodNotImplemented);
+        }
+    }];
 
-    return result;
+    [self setupProximityChannel:messenger];
+    [self setupAudioOutputChannel:messenger];
 }
 
 #pragma mark - 距离传感器
@@ -88,10 +111,10 @@ static const NSTimeInterval kProximityMonitoringTimeout = 10 * 60;
 
 // 播放语音消息时用。iOS 打开 proximityMonitoring 之后，贴近时系统自己会息屏，
 // 我们只把远近变化报给 Flutter 侧，由它决定切听筒还是扬声器。
-- (void)setupProximityChannel:(FlutterViewController *)controller {
+- (void)setupProximityChannel:(NSObject<FlutterBinaryMessenger> *)messenger {
     self.proximityChannel = [FlutterMethodChannel
         methodChannelWithName:@"chat.wildfire/proximity"
-              binaryMessenger:controller.binaryMessenger];
+              binaryMessenger:messenger];
     __weak typeof(self) weakSelf = self;
     [self.proximityChannel setMethodCallHandler:^(FlutterMethodCall *call, FlutterResult result) {
         if ([call.method isEqualToString:@"start"]) {
@@ -156,10 +179,10 @@ static const NSTimeInterval kProximityMonitoringTimeout = 10 * 60;
 // 播放语音消息前查一次：接了耳机就不用距离传感器、也不提示贴近手机。
 // 只做一次性查询，不监听路由变化(AVAudioSessionRouteChangeNotification)：语音消息通常
 // 只有几秒，播放中途插拔耳机的收益不值得再引入一份监听状态。
-- (void)setupAudioOutputChannel:(FlutterViewController *)controller {
+- (void)setupAudioOutputChannel:(NSObject<FlutterBinaryMessenger> *)messenger {
     self.audioOutputChannel = [FlutterMethodChannel
         methodChannelWithName:@"chat.wildfire/audio_output"
-              binaryMessenger:controller.binaryMessenger];
+              binaryMessenger:messenger];
     __weak typeof(self) weakSelf = self;
     [self.audioOutputChannel setMethodCallHandler:^(FlutterMethodCall *call, FlutterResult result) {
         if ([call.method isEqualToString:@"isHeadsetOn"]) {
@@ -253,6 +276,31 @@ static const NSTimeInterval kProximityMonitoringTimeout = 10 * 60;
 
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
     
+}
+
+@end
+
+#pragma mark - SceneDelegate
+
+/// iOS 26 起 UIKit 强制 UIScene 生命周期:不采用的 App 用 Xcode 27(iOS 26 SDK)
+/// 构建后启动即崩溃(UIApplicationEvaluateRuntimeIssueForNoSceneLifecycleAdoption)。
+/// Info.plist 的 UIApplicationSceneManifest 指向本类;继承 FlutterSceneDelegate
+/// 以保留 Flutter 对插件的 scene 事件转发,这里只额外补一条 App 自定义的
+/// wfcchat://share URL 处理——UIKit 迁移到 scene 后不再调用
+/// application:openURL:options:。类放在 AppDelegate.m 里是为避开 pbxproj 增编文件。
+@interface SceneDelegate : FlutterSceneDelegate
+@end
+
+@implementation SceneDelegate
+
+- (void)scene:(UIScene *)scene openURLContexts:(NSSet<UIOpenURLContext *> *)URLContexts {
+    [super scene:scene openURLContexts:URLContexts];
+    UIOpenURLContext *context = URLContexts.anyObject;
+    if (context) {
+        UIApplication *application = UIApplication.sharedApplication;
+        AppDelegate *delegate = (AppDelegate *)application.delegate;
+        [delegate application:application openURL:context.URL options:@{}];
+    }
 }
 
 @end
