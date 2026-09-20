@@ -90,6 +90,15 @@ Android 和 iOS 可以免费使用，其中iOS可以直接配置 IM_SERVER_HOST�
 
 鸿蒙版所依赖的野火IM鸿蒙 SDK 是付费的，可申请试用（联系方式见顶部「重要声明」）。
 
+拿到 SDK 后（官方 `hongmeng_sdk` 仓库 `Output/marswrapper.har`，或按 `README_release.md` 自行 `assembleHar` 生成），要把 `marswrapper.har` 放到 **`imclient/ohos/har/marswrapper.har`**。这个文件不提交仓库（体积 8MB+，且与授权绑定），缺失时鸿蒙构建在第一次 `ohpm install` 就会失败：
+
+```
+ohpm ERROR: Fetch Local File Package Failed
+Error Message: Fetch local file package error, .../imclient/ohos/har/marswrapper.har does not exist.
+```
+
+`imclient/ohos/oh-package.json5` 里 `"@ohos/flutter_ohos": "file:./har/flutter.har"` 不需要自己准备：工程级 `chat/ohos/oh-package.json5` 的 `overrides` 会把它替换成 `chat/ohos/har/flutter.har`（由 `flutter build hap` 从 Flutter 引擎拷进去）。
+
 ### 2. Flutter 版本与 IDE 配置
 
 1. 开发鸿蒙必须使用鸿蒙适配版 Flutter，当前开发版本为 `3.35.8-ohos`（Dart 3.9.x）；其他平台使用官方 Flutter。
@@ -120,7 +129,7 @@ setx FLUTTER_STORAGE_BASE_URL "https://storage.flutter-io.cn"
 注意事项：
 
 1. 切换后必须重新执行 `flutter pub get`，并建议提交代码前确认 `chat/pubspec.lock` 的变更符合预期。
-2. 区块内包含仅鸿蒙需要的 `permission_handler_ohos` 插件，注释区块时会一并移除，无需单独处理。
+2. 仅鸿蒙需要的 `permission_handler_ohos` 插件声明在 `dependencies` 中（`permission_handler` 条目下方），与 `[ohos-begin]` 区块同步启停：构建鸿蒙版时取消注释，构建标准版时注释掉。它没有放在 `dependency_overrides` 区块内，因为 flutter_tools 只会把依赖图可达的包注册进鸿蒙插件表，仅写 override 的包不会被注册，鸿蒙上权限申请会因缺原生端而失败。
 3. `file_picker` 的鸿蒙 fork 依赖 `web ^0.5.1`，与 `flutter_localization` 鸿蒙版依赖的 `web ^1.1.1` 冲突，因此它和 `fluttertoast`、`flutter_local_notifications`、`mobile_scanner`、`flutter_webrtc` 的鸿蒙 fork 默认未启用（保持标准版），在区块内以注释形式保留，确有需要时可单独启用。
 4. 切换时若遇到 gitcode 拉取失败（exit 128），重试 `flutter pub get` 即可。
 5. iOS/mac 平台切换后需同步更新 pod 依赖，否则 `Podfile.lock` 中锁定的旧版本会与新解析的插件版本冲突（典型报错：`CocoaPods could not find compatible versions for pod "xxx"`）：
@@ -133,6 +142,11 @@ setx FLUTTER_STORAGE_BASE_URL "https://storage.flutter-io.cn"
 ### 5. 常见问题
 
 1. 鸿蒙上提示包找不到，请从 [flutter_packages](https://gitcode.com/openharmony-tpc/flutter_packages) 查询已适配鸿蒙平台的版本，并固定为该版本。
+2. `ohpm ERROR: File Not Exist ... chat/ohos/har/xxx.har`：`chat/ohos/entry/oh-package.json5` 与 `chat/ohos/oh-package.json5` 里残留了**已停用 fork 的插件**的 har 引用（`file_picker`/`fluttertoast`/`flutter_local_notifications`/`flutter_webrtc`/`mobile_scanner`，见注意事项 3）。这些 har 只会在对应 fork 启用时由 `flutter build hap` 生成，停用后就是死引用，而 flutter_tools 的 `checkOhosPluginsDependencies` 只会补写新插件、**不会删除旧条目**。删掉这几行即可，之后工具不会再写回来。
+3. ArkTS 报 `This expression is not callable. Type 'ResourceManager' has no call signatures`（文件在 `fvp -0.37.3/ohos/.../FvpPlugin.ets`）：0.37.3 的鸿蒙插件把 `resourceManager` 当方法调用，DevEco 6.x 的 SDK d.ts 里它是属性。鸿蒙侧已在 `[ohos-begin]` 区块里 override `fvp: 0.38.1`（上游已修），标准版（桌面视频播放）仍用 `dependencies` 里的 `^0.37.3`。
+4. 「模块路径不存在」或者编译日志里的路径仍是旧版本：`chat/ohos/build-profile.json5` 里已存在同名 module 时，`addPluginsModules` 不会更新它的 `srcPath`（只跳过），所以升级/更换任何 ohos 插件后要么手改 `srcPath`，要么直接删掉该 module 条目，让工具按新解析路径重新写入。
+5. 构建成功后 `chat/ohos/build-profile.json5` 只剩 `entry` 一个 module、har 依赖被写进工程级 `oh-package.json5` 的 `overrides`，这是 flutter_ohos 工具的正常收尾状态（`removePluginsModules` + `addFlutterModuleAndPluginsOverrides`），下一次构建会再临时加回 plugin modules，不要手动"修"回去。
+6. `Target kernel_snapshot_program failed`，报 `Type 'LoadFileParams' not found`（`webview_all_linux`、`vendor/webview_all_windows`）：鸿蒙区块把 `webview_flutter_platform_interface` override 成了 gitcode 的 fork，`br_webview_flutter-v4.13.0_ohos` 分支里它是 2.13.1（没有这个类型），而桌面这两个 webview 实现包要求 ≥2.15.1——它们被工具链无条件注册，鸿蒙构建也会一起编译。`dependency_overrides` 会绕过版本约束，所以只会在编译期炸。改用 `br_webview_flutter-v4.13.1_ohos` 分支（接口包 2.14.0，含 `LoadFileParams`）即可。
 
 ## Windows的依赖
 1. MSVC 2022(其他版本测试都有问题，有些依赖编译不过去)，[下载地址](https://aka.ms/vs/17/release/vs_community.exe)

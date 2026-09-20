@@ -365,13 +365,19 @@ export default class ImclientPlugin implements FlutterPlugin, MethodCallHandler,
                     break
                 }
                 case 'onDomainInfoUpdate': {
-                    let domainInfo = args[1]
-                    if (typeof domainInfo === 'string') {
-                        domainInfo = json.parse(domainInfo)
+                    // json.parse 的返回类型是 Object | null,而 args 的元素类型是非空 Object,
+                    // 新版 SDK 的 ArkTS 校验不再允许把可空值直接赋回 Object(报
+                    // "Type 'Object | null' is not assignable to type 'Object'")。
+                    // 这里把局部变量与记录的 value 都放宽成可空,解析不出内容时仍传 null,
+                    // Dart 侧 _convertProtoDomainInfo 本来就按可空处理。
+                    const domainInfoStr = args[1]
+                    let domainInfo: Object | null = domainInfoStr
+                    if (typeof domainInfoStr === 'string') {
+                        domainInfo = json.parse(domainInfoStr)
                     }
                     let data = {
                         'domainInfo': domainInfo
-                    } as Record<string, Object>
+                    } as Record<string, Object | null>
                     this.__callback2UI('onDomainInfoUpdate', data)
                     break
                 }
