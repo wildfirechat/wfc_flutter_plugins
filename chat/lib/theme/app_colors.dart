@@ -24,6 +24,8 @@ class AppColors extends ThemeExtension<AppColors> {
     required this.link,
     required this.surface,
     required this.primaryBackground,
+    required this.loginBackdropTop,
+    required this.loginBackdropBottom,
     required this.bottomBarBg,
     required this.popupBg,
     required this.sidebarBg,
@@ -110,6 +112,15 @@ class AppColors extends ThemeExtension<AppColors> {
 
   /// 全局页面基础背景色（如发现、我的、设置等列表页面背景）。
   final Color primaryBackground;
+
+  /// 登录页沉浸式背景的上下两端(顶部带品牌色的天光 → 底部页面基础面)。
+  ///
+  /// 单独立两个令牌而不是在调用点 `accent.withValues(alpha: …)`:半透明品牌蓝
+  /// 压在白面上是浅蓝,压在暗面上会脏成灰蓝,两套明暗必须各调各的。
+  /// 底端不复用 [surface] —— 登录页在暗色下要落到最深的一档,与状态栏/导航栏同色
+  /// 才看不出接缝(见 login_screen.dart 的 AnnotatedRegion)。
+  final Color loginBackdropTop;
+  final Color loginBackdropBottom;
 
   /// 底部导航栏/标签栏背景色。
   final Color bottomBarBg;
@@ -242,6 +253,8 @@ class AppColors extends ThemeExtension<AppColors> {
     link: Color(0xFF1F64E4),
     surface: Color(0xFFFFFFFF),
     primaryBackground: Color(0xFFEBEBEB),
+    loginBackdropTop: Color(0xFFDCE8FB),
+    loginBackdropBottom: Color(0xFFFFFFFF),
     bottomBarBg: Color(0xFFF7F7F7),
     popupBg: Color(0xFFFFFFFF),
     sidebarBg: Color(0xFFE9E9E9),
@@ -309,6 +322,8 @@ class AppColors extends ThemeExtension<AppColors> {
     link: Color(0xFF0A84FF),
     surface: Color(0xFF2C2C2E),
     primaryBackground: Color(0xFF1C1C1E),
+    loginBackdropTop: Color(0xFF17283F),
+    loginBackdropBottom: Color(0xFF1C1C1E),
     bottomBarBg: Color(0xFF1C1C1E),
     popupBg: Color(0xFF323232),
     sidebarBg: Color(0xFF2C2C2E),
@@ -371,6 +386,8 @@ class AppColors extends ThemeExtension<AppColors> {
     Color? link,
     Color? surface,
     Color? primaryBackground,
+    Color? loginBackdropTop,
+    Color? loginBackdropBottom,
     Color? bottomBarBg,
     Color? popupBg,
     Color? sidebarBg,
@@ -431,6 +448,8 @@ class AppColors extends ThemeExtension<AppColors> {
       link: link ?? this.link,
       surface: surface ?? this.surface,
       primaryBackground: primaryBackground ?? this.primaryBackground,
+      loginBackdropTop: loginBackdropTop ?? this.loginBackdropTop,
+      loginBackdropBottom: loginBackdropBottom ?? this.loginBackdropBottom,
       bottomBarBg: bottomBarBg ?? this.bottomBarBg,
       popupBg: popupBg ?? this.popupBg,
       sidebarBg: sidebarBg ?? this.sidebarBg,
@@ -500,6 +519,8 @@ class AppColors extends ThemeExtension<AppColors> {
       link: mix(link, other.link),
       surface: mix(surface, other.surface),
       primaryBackground: mix(primaryBackground, other.primaryBackground),
+      loginBackdropTop: mix(loginBackdropTop, other.loginBackdropTop),
+      loginBackdropBottom: mix(loginBackdropBottom, other.loginBackdropBottom),
       bottomBarBg: mix(bottomBarBg, other.bottomBarBg),
       popupBg: mix(popupBg, other.popupBg),
       sidebarBg: mix(sidebarBg, other.sidebarBg),
