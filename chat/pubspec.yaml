@@ -84,6 +84,15 @@ dependencies:
   audioplayers: ^6.7.1
   path_provider: ^2.1.5
   permission_handler: ^11.3.1
+  # 仅鸿蒙需要的权限插件实现，与下方 [ohos-begin] 区块同步启停(构建标准版时
+  # 注释掉)。必须放在 dependencies 而不是只放在 dependency_overrides 区块里:
+  # flutter_tools 只注册"依赖图可达"的包,没人依赖的 orphan override 不会进
+  # GeneratedPluginRegistrant,ohos 上权限申请会因缺原生端而失败。
+#  permission_handler_ohos:
+#    git:
+#      url: https://gitcode.com/openharmony-sig/flutter_permission_handler.git
+#      path: permission_handler_ohos
+#      ref: br_permission_handler_v11.3.1_ohos
   wechat_camera_picker: ^4.2.1
   # 微信式应用内相册多选(Android/iOS;ohos 无 photo_manager 实现,走系统选择器)
   wechat_assets_picker: ^9.4.0
@@ -202,7 +211,10 @@ dependency_overrides:
   # [ohos-begin] OHOS(鸿蒙)适配依赖
   #
   # 构建鸿蒙版本：
-  #   1. 把 [ohos-begin] 到 [ohos-end]之间的内容都打开。把上面的 flutter_webrtc:path: ../vendor/flutter_webrtc 给注释掉。
+  #   1. 把 [ohos-begin] 到 [ohos-end]之间的内容都打开(注意:按 README 注意事项3,
+  #      区块内 flutter_webrtc/fluttertoast/flutter_local_notifications/file_picker/
+  #      mobile_scanner 五个 fork 默认保持注释,确有需要时再单独启用)。
+  #      把上面的 flutter_webrtc:path: ../vendor/flutter_webrtc 给注释掉。
   #   2. Flutter切换到鸿蒙适配版。
   # 构建标准版本(Android/iOS/桌面)：
   #   1. 把 [ohos-begin] 到 [ohos-end] 之间的内容整体注释掉。
@@ -210,12 +222,8 @@ dependency_overrides:
   # 切换然后执行 flutter pub get，如果是ios/macos，还需要执行 pod install --repo-update
   # ================================================================
   # 仅 ohos 需要的配套插件，标准平台不需要
+  # (permission_handler_ohos 例外:它已在 dependencies 里声明,见文件上方说明)
 #  web: ^1.1.1
-#  permission_handler_ohos:
-#    git:
-#      url: https://gitcode.com/openharmony-sig/flutter_permission_handler.git
-#      path: permission_handler_ohos
-#      ref: br_permission_handler_v11.3.1_ohos
 #  shared_preferences:
 #    git:
 #      url: "https://gitcode.com/openharmony-tpc/flutter_packages.git"
@@ -248,17 +256,33 @@ dependency_overrides:
 #    git:
 #      url: "https://gitcode.com/openharmony-sig/flutter_localization"
 #      ref: br_v0.3.3_ohos
+  # ⚠️ 必须用 v4.13.1 分支:该分支里 webview_flutter_platform_interface 是 2.14.0,
+  # 已含 LoadFileParams/loadFileWithParams;v4.13.0 分支里是 2.13.1,没有这个类型,
+  # 而桌面的 webview_all_linux / webview_all_windows 1.2.1 实现了
+  # `loadFileWithParams(LoadFileParams)`,这两个实现包又会被 Flutter 工具链
+  # 无条件注册(dartPluginClass),鸿蒙构建的 kernel_snapshot 一样会编译它们,
+  # 于是报 "Type 'LoadFileParams' not found" 而整个 hap 构建失败。
 #  webview_flutter:
 #    git:
 #      url: "https://gitcode.com/openharmony-tpc/flutter_packages.git"
 #      path: "packages/webview_flutter/webview_flutter"
-#      ref: br_webview_flutter-v4.13.0_ohos
+#      ref: br_webview_flutter-v4.13.1_ohos
+#      # ref: br_webview_flutter-v4.13.0_ohos  # 接口包仅 2.13.1,鸿蒙构建会编译失败
 #      # ref: br_webview_flutter-v4.8.0_ohos
 #  webview_flutter_platform_interface:
 #    git:
 #      url: "https://gitcode.com/openharmony-tpc/flutter_packages.git"
 #      path: "packages/webview_flutter/webview_flutter_platform_interface"
-#      ref: br_webview_flutter-v4.13.0_ohos
+#      ref: br_webview_flutter-v4.13.1_ohos
+  # fvp 0.37.3 的鸿蒙插件源码写的是 binding.getApplicationContext().resourceManager(),
+  # 在新版 SDK(DevEco 6.x 的 d.ts)里 resourceManager 已是属性,ArkTS 编译报
+  # "This expression is not callable. Type 'ResourceManager' has no call signatures",
+  # 鸿蒙 assembleHars 必然失败;0.38.1 上游已改成属性访问。
+  # 只给鸿蒙构建抬版本,标准版(桌面视频播放)继续用 dependencies 里的 ^0.37.3。
+#  fvp: 0.38.1
+  # 以下五个 fork 按 README 注意事项 3 默认未启用(保持标准版):
+  # file_picker 的鸿蒙 fork 依赖 web ^0.5.1,与 flutter_localization 鸿蒙版的
+  # web ^1.1.1 冲突;其余四个同理保持标准版,确有需要时单独取消注释。
 #  flutter_webrtc:
 #      git:
 #        url: https://gitcode.com/openharmony-sig/fluttertpc_flutter_webrtc
