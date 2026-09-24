@@ -739,6 +739,7 @@
   "pickFriendsToStartChat": "请选择一位或者多位好友发起聊天",
   "pickFriendsToSubmitReport": "请选择一位或者多位好友提交日报",
   "creatingGroup": "群组创建中...",
+  "processingImages": "图片处理中...",
   "groupNameTruncatedSuffix": "{name}等",
   "createGroupChat": "创建群聊",
   "createAndSend": "创建并发送",

@@ -622,6 +622,7 @@
   "pickFriendsToStartChat": "Select one or more friends to start a chat",
   "pickFriendsToSubmitReport": "Select one or more friends to submit the report",
   "creatingGroup": "Creating group...",
+  "processingImages": "Processing images...",
   "groupNameTruncatedSuffix": "{name} and others",
   "createGroupChat": "Create Group Chat",
   "createAndSend": "Create and Send",

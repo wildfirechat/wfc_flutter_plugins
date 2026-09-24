@@ -2385,6 +2385,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get creatingGroup => 'Creating group...';
 
   @override
+  String get processingImages => 'Processing images...';
+
+  @override
   String groupNameTruncatedSuffix(Object name) {
     return '$name and others';
   }

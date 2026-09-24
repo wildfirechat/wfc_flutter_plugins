@@ -4448,6 +4448,12 @@ abstract class AppLocalizations {
   /// **'群组创建中...'**
   String get creatingGroup;
 
+  /// No description provided for @processingImages.
+  ///
+  /// In zh, this message translates to:
+  /// **'图片处理中...'**
+  String get processingImages;
+
   /// No description provided for @groupNameTruncatedSuffix.
   ///
   /// In zh, this message translates to:

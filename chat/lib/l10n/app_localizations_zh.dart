@@ -2357,6 +2357,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get creatingGroup => '群组创建中...';
 
   @override
+  String get processingImages => '图片处理中...';
+
+  @override
   String groupNameTruncatedSuffix(Object name) {
     return '$name等';
   }

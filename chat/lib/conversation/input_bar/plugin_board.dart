@@ -1,10 +1,13 @@
 import 'dart:io';
+import 'dart:isolate';
 import 'dart:typed_data';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:image/image.dart' as img;
 import 'package:image_picker/image_picker.dart';
+import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
 import 'package:imclient/imclient_platform.dart';
 import 'package:imclient/model/conversation.dart';
 import 'package:chat/config.dart';
@@ -36,6 +39,9 @@ class PluginBoard extends StatelessWidget {
   const PluginBoard(this.conversation, {super.key, this.height});
 
   static const int _maxImagePickCount = 9;
+
+  /// 压缩待发送图片的临时文件名序号,同一毫秒连拍多张时保证不重名
+  static int _sendImageSeq = 0;
 
   final Conversation conversation;
   final double? height;
@@ -285,14 +291,95 @@ class PluginBoard extends StatelessWidget {
     }
   }
 
-  /// 微信式应用内相册多选(Android/iOS),最多 [_maxImagePickCount] 张
+  /// 微信式应用内相册多选(Android/iOS),最多 [_maxImagePickCount] 张。
+  /// 未勾"原图"时向微信看齐:长边压到 1080、JPEG 质量 80 后发送。
+  /// 压缩是耗时操作,处理期间显示"图片处理中"对话框(处理方式同 home.dart
+  /// 的建群提示,平板两栏下要指名根 Navigator 关闭);第一张开始发送即撤掉
+  /// 提示,剩余图片在后台继续压缩发送。
   Future<void> _pickImagesWithAssetPicker(BuildContext context,
       ConversationController conversationController) async {
-    final List<File> files = await pickImagesWithWfAssetPicker(context,
+    final WfPickedImages picked = await pickImagesWithWfAssetPicker(context,
         maxAssets: _maxImagePickCount);
-    for (final File file in files) {
-      conversationController.onPickImage(conversation, file.path);
+    if (picked.files.isEmpty) {
+      return;
     }
+    // 勾了原图无需压缩,直接发送
+    if (picked.isOriginal) {
+      for (final File file in picked.files) {
+        conversationController.onPickImage(conversation, file.path);
+      }
+      return;
+    }
+    if (!context.mounted) {
+      // 页面已销毁:不弹处理提示,压缩后直接发送
+      await _compressAndSendAll(picked.files, conversationController);
+      return;
+    }
+    final NavigatorState navigator = Navigator.of(context, rootNavigator: true);
+    _showProcessingDialog(
+        context, AppLocalizations.of(context)!.processingImages);
+    bool dialogPopped = false;
+    try {
+      final String tmpDirPath = (await getTemporaryDirectory()).path;
+      final String firstPath =
+          await _compressImageForSend(picked.files.first.path, tmpDirPath);
+      conversationController.onPickImage(conversation, firstPath);
+      // 第一张开始发送就撤掉提示,不用等全部处理完
+      navigator.pop();
+      dialogPopped = true;
+      if (picked.files.length > 1) {
+        await _compressAndSendAll(
+            picked.files.sublist(1), conversationController);
+      }
+    } finally {
+      // 第一张处理失败时也要撤掉提示,不能挡着界面
+      if (!dialogPopped) {
+        navigator.pop();
+      }
+    }
+  }
+
+  /// 逐张压缩 [_compressImageForSend] 并按选择顺序发送
+  Future<void> _compressAndSendAll(
+      List<File> files, ConversationController conversationController) async {
+    final String tmpDirPath = (await getTemporaryDirectory()).path;
+    for (final File file in files) {
+      final String sendPath =
+          await _compressImageForSend(file.path, tmpDirPath);
+      conversationController.onPickImage(conversation, sendPath);
+    }
+  }
+
+  void _showProcessingDialog(BuildContext context, String title) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return AlertDialog(
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const CircularProgressIndicator(),
+              const SizedBox(height: 16),
+              Text(title),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  /// 压缩待发送图片:长边超过 1080 则等比缩小,统一按 JPEG 质量 80 重编码。
+  /// 大图解码/编码是同步 CPU 操作,放到工作 isolate 执行,避免卡住 UI
+  /// 让"处理中"的转圈动画掉帧。返回压缩产物路径;解码失败(个别 HEIC 等)
+  /// 时返回原路径,不阻塞发送。
+  Future<String> _compressImageForSend(
+      String filePath, String tmpDirPath) async {
+    final String outPath = p.join(
+        tmpDirPath,
+        'send_${DateTime.now().millisecondsSinceEpoch}_'
+        '${_sendImageSeq++}.jpg');
+    return Isolate.run(() => _compressImageSync(filePath, outPath));
   }
 
   @override
@@ -323,5 +410,38 @@ class PluginBoard extends StatelessWidget {
     //     ),
     //   ],
     // );
+  }
+}
+
+/// [_compressImageForSend] 的同步实现,运行于 Isolate.run 的工作 isolate。
+/// 返回压缩产物路径 [outPath];任何失败都返回原路径 [filePath],不阻塞发送。
+String _compressImageSync(String filePath, String outPath) {
+  const int maxEdge = 1080;
+  try {
+    final Uint8List bytes = File(filePath).readAsBytesSync();
+    img.Image? image = img.decodeImage(bytes);
+    if (image == null) {
+      return filePath;
+    }
+    // JPEG 不带 EXIF 方向,先把方向烘焙进像素,避免重编码后图片旋转
+    image = img.bakeOrientation(image);
+    if (image.width > maxEdge || image.height > maxEdge) {
+      image = image.width >= image.height
+          ? img.copyResize(image, width: maxEdge)
+          : img.copyResize(image, height: maxEdge);
+    }
+    if (image.hasAlpha) {
+      // JPEG 不支持透明通道,垫白底,避免透明区编码成黑色
+      final img.Image bg =
+          img.Image(width: image.width, height: image.height, numChannels: 4);
+      img.fill(bg, color: img.ColorRgb8(255, 255, 255));
+      img.compositeImage(bg, image);
+      image = bg;
+    }
+    File(outPath)
+        .writeAsBytesSync(img.encodeJpg(image, quality: 80), flush: true);
+    return outPath;
+  } catch (_) {
+    return filePath;
   }
 }

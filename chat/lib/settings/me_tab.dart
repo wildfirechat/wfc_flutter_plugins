@@ -160,10 +160,10 @@ class SelfProfile extends StatelessWidget {
   /// 桌面/ohos 无 photo_manager 实现,仍走系统选择器
   void _pickPortraitFromAlbum(BuildContext context) async {
     if (WfcPlatform.isAndroid || WfcPlatform.isIOS) {
-      final files = await pickImagesWithWfAssetPicker(context,
+      final picked = await pickImagesWithWfAssetPicker(context,
           maxAssets: 1, showTakePhotoEntry: true);
-      if (files.isNotEmpty && context.mounted) {
-        _uploadPortrait(files.first.path, context);
+      if (picked.files.isNotEmpty && context.mounted) {
+        _uploadPortrait(picked.files.first.path, context);
       }
     } else {
       _pickImage(ImageSource.gallery, context);
